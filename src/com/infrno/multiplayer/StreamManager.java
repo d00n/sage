@@ -21,7 +21,7 @@ public class StreamManager
 			AMFDataObj curr_user_info = main_app.userManager.getClientInfo(i.toString());
 			main_app.log(curr_user_info.getString("peer_connection_status"));
 			
-			if(curr_user_info.getString("peer_connection_status").equals("peer_netconnection_disconnected"))
+			if(!curr_user_info.getString("peer_connection_status").equals("peer_netconnection_connected"))
 				use_peer_connection=false;
 			
 		}
