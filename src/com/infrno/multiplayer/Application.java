@@ -16,7 +16,7 @@ public class Application extends ModuleBase
 	public void onAppStart(IApplicationInstance appInstance) 
 	{
 		String fullname = appInstance.getApplication().getName() + "/"+ appInstance.getName();
-		log("onAppStart: " + fullname);
+		log("Infrno version 0.8.3 onAppStart: " + fullname);
 		
 		app_instance = appInstance;
 		chatManager = new ChatManager(this);
@@ -64,14 +64,19 @@ public class Application extends ModuleBase
 		chatManager.chatToServer(client, params);
 	}
 	
+	public void getUserStats(IClient client, RequestFunction function,AMFDataList params)
+	{
+		userManager.getUserStats();
+	}
+	
+	public void reportUserStats(IClient client, RequestFunction function,AMFDataList params) 
+	{
+		userManager.reportUserStats(client, params);
+	}
+
 	public void updateUserInfo(IClient client, RequestFunction function,AMFDataList params) 
 	{
 		userManager.updateUserInfo(Integer.toString(client.getClientId()), params.get(PARAM1));
 	}
 	
-	public void doSomething(IClient client, RequestFunction function,AMFDataList params) 
-	{
-		getLogger().info("doSomething");
-		sendResult(client, params, "Hello Wowza");
-	}
 }

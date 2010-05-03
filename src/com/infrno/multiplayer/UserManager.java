@@ -17,6 +17,11 @@ public class UserManager
 		users_obj = new AMFDataObj();
 	}
 	
+	public void getUserStats()
+	{
+		main_app.app_instance.broadcastMsg("getUserStats");
+	}
+	
 	public void userConnect(IClient client, AMFDataList params)
 	{
 		//TODO: put in user authentication stuff here
@@ -50,6 +55,11 @@ public class UserManager
 		
 		users_obj.remove(suid);
 		main_app.app_instance.broadcastMsg("updateUsers", users_obj);
+	}
+	
+	public void reportUserStats(IClient client, AMFDataList params)
+	{
+		main_app.log("user stats: "+params.get(3).toString());
 	}
 	
 	public void updateUserInfo(String suid, AMFData user_obj)
