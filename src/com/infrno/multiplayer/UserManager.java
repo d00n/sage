@@ -1,5 +1,10 @@
 package com.infrno.multiplayer;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+
+import com.infrno.multiplayer.util.AeSimpleSHA1;
 import com.wowza.wms.amf.AMFData;
 import com.wowza.wms.amf.AMFDataList;
 import com.wowza.wms.amf.AMFDataObj;
@@ -7,6 +12,8 @@ import com.wowza.wms.client.IClient;
 
 public class UserManager 
 {
+	public static String SHARED_KEY = "secret_key";
+	
 	public AMFDataObj users_obj;
 
 	private Application main_app;
@@ -28,7 +35,14 @@ public class UserManager
 		main_app.log("onConnect: " + client.getClientId());
 		
 		AMFDataObj curr_user_obj = (AMFDataObj) params.get(3);
-//		AMFDataObj curr_user_obj = new AMFDataObj();
+		
+		//TODO: need to compare passed in key with encrypted key
+		if(!validateKey(curr_user_obj.getString("auth_key"))){
+			main_app.log("user key invalid");
+			client.rejectConnection();
+			return;
+		}
+		
 		curr_user_obj.put("suid", client.getClientId());
 		
 		client.setStreamReadAccess(IClient.READ_ACCESS_ALL);
@@ -73,6 +87,32 @@ public class UserManager
 	public AMFDataObj getClientInfo(String suid)
 	{
 		return (AMFDataObj) users_obj.get(suid);
+	}
+	
+	private Boolean validateKey(String auth_string)
+	{
+		try{
+			String auth_hash = auth_string.split(":")[0];
+			String auth_time = auth_string.split(":")[1];
+			
+			if(new Date().getTime()/1000 > Integer.parseInt(auth_time)){
+				main_app.log("Authentication time is stale");
+				return false;
+			}
+			
+			String generated_hash=AeSimpleSHA1.SHA1(SHARED_KEY+auth_time);
+			main_app.log("Java output");
+			main_app.log(generated_hash);
+			
+			return generated_hash.equals(auth_hash);
+		} catch (NoSuchAlgorithmException e){
+			main_app.log("Unable to generate hash");
+			return false;
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			main_app.log("Unable to generate hash");
+			return false;
+		}
 	}
 }
 
