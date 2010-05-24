@@ -2,7 +2,7 @@
 <project name="sage" default="jar" basedir=".">
 	
 	<property name="wowza.lib.dir" value="C:\Program Files\Wowza Media Systems\Wowza Media Server 2\lib"/>
-	<property name="jar.filename" value="infrno_wowza.jar"/>
+	<property name="jar.filename" value="chat.jar"/>
 	<property name="core.build.dir" value="bin"/>
 
 	<target name="jar">
