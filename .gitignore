@@ -1,0 +1,4 @@
+.classpath
+build.xml
+bin/*
+.project

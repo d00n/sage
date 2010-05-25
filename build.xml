@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <project name="sage" default="jar" basedir=".">
 	
-	<property name="wowza.lib.dir" value="C:\Program Files\Wowza Media Systems\Wowza Media Server 2\lib"/>
+	<!--property name="wowza.lib.dir" value="C:\Program Files\Wowza Media Systems\Wowza Media Server 2\lib"/-->
+	<property name="wowza.lib.dir" value="/usr/local/WowzaMediaServer/lib"/>
 	<property name="jar.filename" value="chat.jar"/>
 	<property name="core.build.dir" value="bin"/>
 
