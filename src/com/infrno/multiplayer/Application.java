@@ -16,7 +16,7 @@ public class Application extends ModuleBase
 	public void onAppStart(IApplicationInstance appInstance) 
 	{
 		String fullname = appInstance.getApplication().getName() + "/"+ appInstance.getName();
-		log("Infrno version 0.8.3 onAppStart: " + fullname);
+		log("Infrno version 0.8.4 onAppStart: " + fullname);
 		
 		app_instance = appInstance;
 		chatManager = new ChatManager(this);

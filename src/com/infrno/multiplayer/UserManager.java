@@ -35,9 +35,10 @@ public class UserManager
 		main_app.log("onConnect: " + client.getClientId());
 		
 		AMFDataObj curr_user_obj = (AMFDataObj) params.get(3);
+		String auth_key = params.getString(4);
 		
 		//TODO: need to compare passed in key with encrypted key
-		if(!validateKey(curr_user_obj.getString("auth_key"))){
+		if(!validateKey(auth_key)){
 			main_app.log("user key invalid");
 			client.rejectConnection();
 			return;
@@ -94,6 +95,9 @@ public class UserManager
 		try{
 			String auth_hash = auth_string.split(":")[0];
 			String auth_time = auth_string.split(":")[1];
+			
+			main_app.log("curr time: "+new Date().getTime()/1000);
+			main_app.log("passed time: "+Integer.parseInt(auth_time));
 			
 			if(new Date().getTime()/1000 > Integer.parseInt(auth_time)){
 				main_app.log("Authentication time is stale");
