@@ -36,6 +36,9 @@ public class UserManager
 		
 		AMFDataObj curr_user_obj = (AMFDataObj) params.get(3);
 		String auth_key = params.getString(4);
+		String room_id = params.getString(5);
+		String room_name = params.getString(6);
+		String user_name = params.getString(7);
 		
 		//TODO: need to compare passed in key with encrypted key
 		if(!validateKey(auth_key)){
