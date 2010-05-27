@@ -1,5 +1,6 @@
 package com.infrno.multiplayer;
 
+import com.infrno.multiplayer.util.DatabaseClass;
 import com.wowza.wms.application.*;
 import com.wowza.wms.amf.*;
 import com.wowza.wms.client.*;
@@ -10,6 +11,7 @@ public class Application extends ModuleBase
 {
 	public IApplicationInstance 	app_instance;
 	public ChatManager				chatManager;
+	public DatabaseClass			databaseManager;
 	public StreamManager			streamManager;
 	public UserManager				userManager;
 	
@@ -20,6 +22,7 @@ public class Application extends ModuleBase
 		
 		app_instance = appInstance;
 		chatManager = new ChatManager(this);
+		databaseManager = new DatabaseClass(this);
 		streamManager = new StreamManager(this);
 		userManager = new UserManager(this);
 	}
@@ -30,6 +33,7 @@ public class Application extends ModuleBase
 		log("onAppStop: " + fullname);
 		
 		chatManager = null;
+		databaseManager = null;
 		streamManager = null;
 		userManager = null;
 		app_instance = null;
