@@ -4,3 +4,4 @@ bin/*
 .project
 .externalToolBuilders
 /build.xml
+/jar
