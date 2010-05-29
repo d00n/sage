@@ -12,7 +12,7 @@ import com.wowza.wms.client.IClient;
 
 public class UserManager 
 {
-	public static String SHARED_KEY = "secret_key";
+	public static String SHARED_KEY = "871a3f2c392e10ca2e04c442f1eedb65";
 	
 	public AMFDataObj users_obj;
 
@@ -32,7 +32,7 @@ public class UserManager
 	public void userConnect(IClient client, AMFDataList params)
 	{
 		//TODO: put in user authentication stuff here
-		main_app.log("onConnect: " + client.getClientId());
+		main_app.log("UserManager.userConnect() " + client.getClientId());
 		
 		AMFDataObj curr_user_obj = (AMFDataObj) params.get(3);
 		String auth_key = params.getString(4);
@@ -42,7 +42,7 @@ public class UserManager
 		
 		//TODO: need to compare passed in key with encrypted key
 		if(!validateKey(auth_key)){
-			main_app.log("user key invalid");
+			main_app.log("UserManager.userConnect() user key invalid");
 			client.rejectConnection();
 			return;
 		}
@@ -60,7 +60,7 @@ public class UserManager
 	
 	public void userDisconnect(IClient client)
 	{
-		main_app.log("onDisconnect: " + client.getClientId());
+		main_app.log("UserManager.onDisconnect() " + client.getClientId());
 		
 		String curr_user_suid = Integer.toString(client.getClientId());
 		removeUser(curr_user_suid);
@@ -77,7 +77,7 @@ public class UserManager
 	
 	public void reportUserStats(IClient client, AMFDataList params)
 	{
-		main_app.log("user stats: "+params.get(3).toString());
+		main_app.log("UserManager.reportUserStats() user stats: "+params.get(3).toString());
 	}
 	
 	public void updateUserInfo(String suid, AMFData user_obj)
@@ -99,25 +99,25 @@ public class UserManager
 			String auth_hash = auth_string.split(":")[0];
 			String auth_time = auth_string.split(":")[1];
 			
-			main_app.log("curr time: "+new Date().getTime()/1000);
-			main_app.log("passed time: "+Integer.parseInt(auth_time));
+			main_app.log("UserManager.validateKey() curr time: "+new Date().getTime()/1000);
+			main_app.log("UserManager.validateKey() passed time: "+Integer.parseInt(auth_time));
 			
 			if(new Date().getTime()/1000 > Integer.parseInt(auth_time)){
-				main_app.log("Authentication time is stale");
+				main_app.log("UserManager.Authentication time is stale");
 				return false;
 			}
 			
 			String generated_hash=AeSimpleSHA1.SHA1(SHARED_KEY+auth_time);
-			main_app.log("Java output");
-			main_app.log(generated_hash);
+			main_app.log("UserManager.Java output");
+			main_app.log("UserManager.validateKey() "+generated_hash);
 			
 			return generated_hash.equals(auth_hash);
 		} catch (NoSuchAlgorithmException e){
-			main_app.log("Unable to generate hash");
+			main_app.log("UserManager.validateKey() Unable to generate hash");
 			return false;
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
-			main_app.log("Unable to generate hash");
+			main_app.log("UserManager.validateKey() Unable to generate hash");
 			return false;
 		}
 	}

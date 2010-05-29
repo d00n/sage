@@ -17,10 +17,15 @@ public class DatabaseClass
 	{
 		main_class = (Application) main_class_in;
 		
-		db_server = main_class.app_instance.getProperties().getPropertyStr("db_server");
-		db_username = main_class.app_instance.getProperties().getPropertyStr("db_username");
-		db_password = main_class.app_instance.getProperties().getPropertyStr("db_password");
-		db_instance_name = main_class.app_instance.getProperties().getPropertyStr("db_instance_name");
+//		db_server = main_class.app_instance.getProperties().getPropertyStr("db_server");
+//		db_username = main_class.app_instance.getProperties().getPropertyStr("db_username");
+//		db_password = main_class.app_instance.getProperties().getPropertyStr("db_password");
+//		db_instance_name = main_class.app_instance.getProperties().getPropertyStr("db_instance_name");
+		
+		db_server = "gold";
+		db_username = "sage_rw";
+		db_password = "sk00bysnack99";
+		db_instance_name = "sage";
 		
 		setupDBConnection();
 	}
@@ -71,6 +76,24 @@ public class DatabaseClass
 	/**
 	 * Methods to call
 	 */
+
+	public int newRoomId()
+	{
+		int new_room_id = 0;
+		
+		try{
+			Connection conn = getDBConnection();
+			String sql = "insert into room (created_on) values (NOW())";
+			ResultSet rs = executeQuery(conn,sql);
+			new_room_id = rs.getInt("priKey");
+			conn.close();
+		}catch(SQLException e){
+			main_class.error("sqlexecuteException: " + e.toString());
+		}
+		
+		return new_room_id;
+	}
+		
 	
 	public String sampleQuery(String some_val)
 	{

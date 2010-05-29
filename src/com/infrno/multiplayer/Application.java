@@ -14,28 +14,31 @@ public class Application extends ModuleBase
 	public DatabaseClass			databaseManager;
 	public StreamManager			streamManager;
 	public UserManager				userManager;
+	public WhiteboardManager		whiteboardManager;
 	
 	public void onAppStart(IApplicationInstance appInstance) 
 	{
 		String fullname = appInstance.getApplication().getName() + "/"+ appInstance.getName();
-		log("Infrno version 0.8.4 onAppStart: " + fullname);
+		getLogger().info("Infrno version 0.8.4 onAppStart: " + fullname);
 		
 		app_instance = appInstance;
 		chatManager = new ChatManager(this);
 		databaseManager = new DatabaseClass(this);
 		streamManager = new StreamManager(this);
 		userManager = new UserManager(this);
+		whiteboardManager = new WhiteboardManager(this);
 	}
 
 	public void onAppStop(IApplicationInstance appInstance) 
 	{
 		String fullname = appInstance.getApplication().getName() + "/"+ appInstance.getName();
-		log("onAppStop: " + fullname);
+		getLogger().info("onAppStop: " + fullname);
 		
 		chatManager = null;
 		databaseManager = null;
 		streamManager = null;
 		userManager = null;
+		whiteboardManager = null;
 		app_instance = null;
 	}
 
