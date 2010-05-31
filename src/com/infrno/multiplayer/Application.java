@@ -19,7 +19,7 @@ public class Application extends ModuleBase
 	public void onAppStart(IApplicationInstance appInstance) 
 	{
 		String fullname = appInstance.getApplication().getName() + "/"+ appInstance.getName();
-		getLogger().info("Infrno version 0.8.4 onAppStart: " + fullname);
+		getLogger().info("Application.onAppStart() Infrno version 0.8.4 " + fullname);
 		
 		app_instance = appInstance;
 		chatManager = new ChatManager(this);
@@ -32,7 +32,7 @@ public class Application extends ModuleBase
 	public void onAppStop(IApplicationInstance appInstance) 
 	{
 		String fullname = appInstance.getApplication().getName() + "/"+ appInstance.getName();
-		getLogger().info("onAppStop: " + fullname);
+		getLogger().info("Application.onAppStop() " + fullname);
 		
 		chatManager = null;
 		databaseManager = null;

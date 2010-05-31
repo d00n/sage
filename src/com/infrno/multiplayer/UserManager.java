@@ -12,7 +12,8 @@ import com.wowza.wms.client.IClient;
 
 public class UserManager 
 {
-	public static String SHARED_KEY = "871a3f2c392e10ca2e04c442f1eedb65";
+	private static String SHARED_KEY = "871a3f2c392e10ca2e04c442f1eedb65";
+	private static String SHARED_OBJECT_NAME = "whiteboard_contents";
 	
 	public AMFDataObj users_obj;
 
@@ -40,12 +41,15 @@ public class UserManager
 		String room_name = params.getString(6);
 		String user_name = params.getString(7);
 		
-		//TODO: need to compare passed in key with encrypted key
+		
 		if(!validateKey(auth_key)){
 			main_app.log("UserManager.userConnect() user key invalid");
 			client.rejectConnection();
 			return;
 		}
+		
+		client.setSharedObjectReadAccess(SHARED_OBJECT_NAME);
+		client.setSharedObjectWriteAccess(SHARED_OBJECT_NAME);
 		
 		curr_user_obj.put("suid", client.getClientId());
 		

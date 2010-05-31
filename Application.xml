@@ -110,7 +110,7 @@
 				<Class>com.wowza.wms.module.ModuleClientLogging</Class>
 			</Module>
 			<Module>
-				<Name>infrno_app</Name>
+				<Name>chat</Name>
 				<Description>Infrno Application</Description>
 				<Class>com.infrno.multiplayer.Application</Class>
 			</Module> 

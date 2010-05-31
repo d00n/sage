@@ -19,7 +19,7 @@ public class ChatManager
 		
 		String uname = main_app.userManager.getClientInfo(Integer.toString(client.getClientId())).getString("uname");
 		
-		main_app.log("chat from client came in: "+msgIn);
+		main_app.log("ChatManager.chatToServer() chat from client came in: "+msgIn);
 		main_app.app_instance.broadcastMsg("chatToUser", uname+": "+msgIn);
 	}
 	
