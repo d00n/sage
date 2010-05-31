@@ -111,7 +111,12 @@
 			</Module>
 			<Module>
 				<Name>chat</Name>
-				<Description>Infrno Application</Description>
+				<Description>chat</Description>
+				<Class>com.infrno.multiplayer.Application</Class>
+			</Module> 
+			<Module>
+				<Name>whiteboard</Name>
+				<Description>whiteboard</Description>
 				<Class>com.infrno.multiplayer.Application</Class>
 			</Module> 
 		</Modules>

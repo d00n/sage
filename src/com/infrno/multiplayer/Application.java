@@ -66,24 +66,29 @@ public class Application extends ModuleBase
 	 * Client Methods
 	 */
 	
-	public void chatToServer(IClient client, RequestFunction function,AMFDataList params) 
+	public void chatToServer(IClient client, RequestFunction function, AMFDataList params) 
 	{
 		chatManager.chatToServer(client, params);
 	}
 	
-	public void getUserStats(IClient client, RequestFunction function,AMFDataList params)
+	public void getUserStats(IClient client, RequestFunction function, AMFDataList params)
 	{
 		userManager.getUserStats();
 	}
 	
-	public void reportUserStats(IClient client, RequestFunction function,AMFDataList params) 
+	public void reportUserStats(IClient client, RequestFunction function, AMFDataList params) 
 	{
 		userManager.reportUserStats(client, params);
 	}
 
-	public void updateUserInfo(IClient client, RequestFunction function,AMFDataList params) 
+	public void updateUserInfo(IClient client, RequestFunction function, AMFDataList params) 
 	{
 		userManager.updateUserInfo(Integer.toString(client.getClientId()), params.get(PARAM1));
+	}
+	
+	public void sendImage(IClient client, RequestFunction function, AMFDataList params) 
+	{
+		whiteboardManager.sendImage(client, function, params);
 	}
 	
 }
