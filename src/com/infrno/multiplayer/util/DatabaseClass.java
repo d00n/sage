@@ -1,6 +1,7 @@
 package com.infrno.multiplayer.util;
 
 import java.sql.*;
+import com.mysql.jdbc.Driver;
 
 import com.infrno.multiplayer.Application;
 
@@ -35,7 +36,7 @@ public class DatabaseClass
     	try{
             Class.forName("com.mysql.jdbc.Driver");
         }catch ( ClassNotFoundException exception ){
-        	main_class.error( "Unable to load jdbc driver. ClassNotFoundException " + exception.getMessage( ) );
+        	main_class.error("DatabaseClass.setupDBConnection() Unable to load jdbc driver. ClassNotFoundException " + exception.getMessage( ) );
         }
     }
 	
@@ -53,7 +54,7 @@ public class DatabaseClass
 			rs = stmt.executeQuery(sql);
 		}catch(SQLException ex){
 			main_class.error(sql);
-			main_class.error("sqlexecuteException execute query: " + ex.toString());
+			main_class.error("DatabaseClass.executeQuery() sqlexecuteException execute query: " + ex.toString());
 		}
 		return rs;
 	}
@@ -68,7 +69,7 @@ public class DatabaseClass
 			conn.close();
 		}catch(SQLException ex){
 			main_class.error(sql);
-			main_class.error("sqlexecuteException execute update: " + ex.toString());
+			main_class.error("DatabaseClass.executeUpdate() sqlexecuteException execute update: " + ex.toString());
 		}
 		return rs;
 	}
@@ -77,21 +78,20 @@ public class DatabaseClass
 	 * Methods to call
 	 */
 
-	public int newRoomId()
+	public boolean saveImage()
 	{
-		int new_room_id = 0;
 		
 		try{
 			Connection conn = getDBConnection();
-			String sql = "insert into room (created_on) values (NOW())";
-			ResultSet rs = executeQuery(conn,sql);
-			new_room_id = rs.getInt("priKey");
+			Statement stmt = conn.createStatement();
+			String sql = "insert into image (filename, hash) values ('test', 'foobar')";
+			stmt.execute(sql);
 			conn.close();
 		}catch(SQLException e){
-			main_class.error("sqlexecuteException: " + e.toString());
+			main_class.error("DatabaseClass.saveImage() sqlexecuteException: " + e.toString());
 		}
 		
-		return new_room_id;
+		return true;
 	}
 		
 	
