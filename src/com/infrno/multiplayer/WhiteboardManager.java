@@ -20,6 +20,11 @@ import com.wowza.wms.module.IModuleCallResult;
 import com.wowza.wms.module.ModuleBase;
 import com.wowza.wms.request.RequestFunction;
 
+import com.wowza.wms.module.*;
+import com.wowza.wms.client.*;
+import com.wowza.wms.amf.*;
+import com.wowza.wms.request.*;
+
 
 class NameMeBetter extends ModuleBase implements IModuleCallResult {
 	public void onResult(IClient client, RequestFunction function, AMFDataList params) {
@@ -49,6 +54,7 @@ public class WhiteboardManager
 
 		AMFDataByteArray image_amfba 	= (AMFDataByteArray) params.get(3);
 		String imageName 				= params.getString(4);
+		String sdID		 				= params.getString(5);
 //		AMFDataItem x_amfdi 			= new AMFDataItem(params.getString(3));
 //		AMFDataItem y_amfdi 			= new AMFDataItem(params.getString(4));
 //		AMFDataItem width_amfdi 		= new AMFDataItem(params.getString(5));
@@ -80,7 +86,7 @@ public class WhiteboardManager
 		
 		String hashPath = convertHashToPath(hash);
 		
-		String fullPath = "c:/Temp/" + hashPath;
+		String fullPath = "C:/Program Files/Apache Software Foundation/Apache2.2/htdocs/" + hashPath;
 		
 		File fullPathDirs = new File(fullPath);
 		fullPathDirs.mkdirs();
@@ -95,10 +101,14 @@ public class WhiteboardManager
 			System.out.println("IOException : " + ioe);
 		}
 		
+
+		String IMAGE_HOST = "http://localhost";
+		String imageURL = IMAGE_HOST + hashPath + imageName;
+		main_app.returnImageURL(client, params, imageURL, sdID);
 		
 		String appInstanceName = main_app.app_instance.getName();
 		
-		main_app.databaseManager.saveImage();
+//		main_app.databaseManager.saveImage();
 //
 //		Client jpg_client;
 //		Iterator i = clientList.iterator();

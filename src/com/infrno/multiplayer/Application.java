@@ -91,4 +91,14 @@ public class Application extends ModuleBase
 		whiteboardManager.sendImage(client, function, params);
 	}
 	
+	public void returnImageURL(IClient client, AMFDataList params, String imageURL, String sdID){
+
+		AMFDataObj returnObj = new AMFDataObj();
+		returnObj.put("imageURL", imageURL);
+		returnObj.put("sdID", sdID);	
+		
+		sendResult(client, params, returnObj);
+		
+	}
+	
 }
