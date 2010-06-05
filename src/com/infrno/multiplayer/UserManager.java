@@ -9,6 +9,8 @@ import com.wowza.wms.amf.AMFData;
 import com.wowza.wms.amf.AMFDataList;
 import com.wowza.wms.amf.AMFDataObj;
 import com.wowza.wms.client.IClient;
+import com.wowza.wms.sharedobject.ISharedObject;
+import com.wowza.wms.sharedobject.ISharedObjects;
 
 public class UserManager 
 {
@@ -100,8 +102,8 @@ public class UserManager
 	private Boolean validateKey(String auth_string)
 	{
 		// TODO: restrict this to trusted hosts (localhost)
-		if (auth_string.equals("test_key")) {
-			main_app.log( "UserManger.validateKey() using test_key, just come right in." );
+		if (auth_string.equals("sample_auth_key")) {
+			main_app.log( "UserManger.validateKey() using sample_auth_key, just come right in." );
 			return true;
 		}
 		

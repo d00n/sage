@@ -1,7 +1,5 @@
 package com.infrno.multiplayer;
 
-import java.util.Iterator;
-import java.util.List;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,23 +8,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import com.wowza.wms.amf.AMFDataByteArray;
-import com.wowza.wms.amf.AMFDataItem;
 import com.wowza.wms.amf.AMFDataList;
 import com.wowza.wms.amf.AMFDataObj;
-import com.wowza.wms.application.IApplicationInstance;
-import com.wowza.wms.client.Client;
 import com.wowza.wms.client.IClient;
 import com.wowza.wms.module.IModuleCallResult;
 import com.wowza.wms.module.ModuleBase;
 import com.wowza.wms.request.RequestFunction;
 
-import com.wowza.wms.module.*;
-import com.wowza.wms.client.*;
-import com.wowza.wms.amf.*;
-import com.wowza.wms.request.*;
 
-
-class NameMeBetter extends ModuleBase implements IModuleCallResult {
+class CallResult extends ModuleBase implements IModuleCallResult {
 	public void onResult(IClient client, RequestFunction function, AMFDataList params) {
 
 		// String returnValue = getParamString(params, PARAM1);
@@ -43,7 +33,7 @@ public class WhiteboardManager
 	}
 	
 	public void myFunction(IClient client, RequestFunction function, AMFDataObj params) {
-		client.call("receiveJPG", new NameMeBetter(), params);
+		client.call("receiveJPG", new CallResult(), params);
 	}
 	
 	public void sendImage(IClient client, RequestFunction function,	AMFDataList params) {
