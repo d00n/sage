@@ -30,9 +30,9 @@ public class WhiteboardManager
 //	private static String IMAGE_CACHE_DIR = "C:/Program Files/Apache Software Foundation/Apache2.2/htdocs/";
 //	private static String IMAGE_HOST = "http://localhost";
 	
-	private static String DOC_ROOT = "/var/www/html/";
+	private static String IMAGE_HOST = "http://admin.infrno.net/";
 	private static String IMAGE_CACHE_DIR = "images/";
-	private static String IMAGE_HOST = "http://admin.infrno.net";
+	private static String DOC_ROOT = "/var/www/html/";
 	
 	public WhiteboardManager(Application app) 
 	{
@@ -118,7 +118,7 @@ public class WhiteboardManager
 	
 	private static final String convertHashToPath(String hash) {
 		StringBuffer sbuf = new StringBuffer();		
-		sbuf.append("/");
+
 		for (int i=0; i<32; i=i+4){
 			sbuf.append( hash.substring(i, i+4) );
 			sbuf.append("/");
