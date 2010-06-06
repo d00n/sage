@@ -30,7 +30,7 @@ public class WhiteboardManager
 //	private static String IMAGE_CACHE_DIR = "C:/Program Files/Apache Software Foundation/Apache2.2/htdocs/";
 //	private static String IMAGE_HOST = "http://localhost";
 	
-	private static String IMAGE_CACHE_DIR = "/var/www/html/";
+	private static String IMAGE_CACHE_DIR = "/var/www/html/images/";
 	private static String IMAGE_HOST = "http://admin.infrno.net";
 	
 	public WhiteboardManager(Application app) 
