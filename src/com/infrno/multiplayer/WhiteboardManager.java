@@ -27,6 +27,12 @@ public class WhiteboardManager
 {
 	private Application main_app;
 	
+//	private static String IMAGE_CACHE_DIR = "C:/Program Files/Apache Software Foundation/Apache2.2/htdocs/";
+//	private static String IMAGE_HOST = "http://localhost";
+	
+	private static String IMAGE_CACHE_DIR = "/var/www/html/";
+	private static String IMAGE_HOST = "http://admin.infrno.net";
+	
 	public WhiteboardManager(Application app) 
 	{
 		main_app = app;
@@ -76,7 +82,7 @@ public class WhiteboardManager
 		
 		String hashPath = convertHashToPath(hash);
 		
-		String fullPath = "C:/Program Files/Apache Software Foundation/Apache2.2/htdocs/" + hashPath;
+		String fullPath = IMAGE_CACHE_DIR + hashPath;
 		
 		File fullPathDirs = new File(fullPath);
 		fullPathDirs.mkdirs();
@@ -92,7 +98,6 @@ public class WhiteboardManager
 		}
 		
 
-		String IMAGE_HOST = "http://localhost";
 		String imageURL = IMAGE_HOST + hashPath + imageName;
 		main_app.returnImageURL(client, params, imageURL, sdID);
 		
