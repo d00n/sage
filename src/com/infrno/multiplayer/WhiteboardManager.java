@@ -88,6 +88,8 @@ public class WhiteboardManager
 		File fullPathDirs = new File(fullPath);
 		fullPathDirs.mkdirs();
 		
+		main_app.log("WhiteboardManager.sendImage() about to save: " + fullPathDirs + imageName);
+		
 		try {
 			FileOutputStream fos = new FileOutputStream(fullPath + imageName);
 			fos.write(image_amfba.toArray());
@@ -160,5 +162,5 @@ public class WhiteboardManager
 	                            toString();
 		}
 	}
-	
+
 }

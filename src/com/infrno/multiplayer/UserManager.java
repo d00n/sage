@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.infrno.multiplayer.util.AeSimpleSHA1;
 import com.wowza.wms.amf.AMFData;
+import com.wowza.wms.amf.AMFDataArray;
 import com.wowza.wms.amf.AMFDataList;
 import com.wowza.wms.amf.AMFDataObj;
 import com.wowza.wms.client.IClient;
@@ -84,6 +85,13 @@ public class UserManager
 	public void reportUserStats(IClient client, AMFDataList params)
 	{
 		main_app.log("UserManager.reportUserStats() user stats: "+params.get(3).toString());
+
+		AMFData dataObj = params.get(3);
+
+		int room_id = dataObj["room_id"];
+		
+		int type = dataObj.getType();
+
 	}
 	
 	public void updateUserInfo(String suid, AMFData user_obj)

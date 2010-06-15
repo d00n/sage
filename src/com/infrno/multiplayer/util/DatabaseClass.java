@@ -78,13 +78,26 @@ public class DatabaseClass
 	 * Methods to call
 	 */
 
-	public boolean saveImage()
+	public boolean saveSessionReport()
 	{
 		
 		try{
 			Connection conn = getDBConnection();
 			Statement stmt = conn.createStatement();
-			String sql = "insert into image (filename, hash) values ('test', 'foobar')";
+			String sql = "insert into session_report "+
+				"(room_id, " +
+				"user_name, " +
+				"audio_bytes_per_second, " +
+				"video_bytes_per_second, " +
+				"data_bytes_per_second, " +
+				"current_bytes_per_second, " +
+				"max_bytes_per_second, " +
+				"byte_count, " +
+				"data_byte_count, " +
+				"video_byte_count, " +
+				"audio_loss_rate, " +
+				"dropped_frames) values";
+			
 			stmt.execute(sql);
 			conn.close();
 		}catch(SQLException e){
