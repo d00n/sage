@@ -19,7 +19,7 @@ public class StreamManager
 		AMFDataObj user_obj = main_app.userManager.users_obj;
 		for(Object i : user_obj.getKeys()){
 			AMFDataObj curr_user_info = main_app.userManager.getClientInfo(i.toString());
-			main_app.log(curr_user_info.getString("peer_connection_status"));
+			main_app.log("StreamManager.checkStreamSupport() " +curr_user_info.getString("peer_connection_status"));
 			
 			if(!curr_user_info.getString("peer_connection_status").equals("peer_netconnection_connected"))
 				use_peer_connection=false;

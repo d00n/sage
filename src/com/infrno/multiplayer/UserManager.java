@@ -6,13 +6,17 @@ import java.util.Date;
 
 import com.infrno.multiplayer.util.AeSimpleSHA1;
 import com.wowza.wms.amf.AMFData;
+import com.wowza.wms.amf.AMFDataArray;
 import com.wowza.wms.amf.AMFDataList;
 import com.wowza.wms.amf.AMFDataObj;
 import com.wowza.wms.client.IClient;
+import com.wowza.wms.sharedobject.ISharedObject;
+import com.wowza.wms.sharedobject.ISharedObjects;
 
 public class UserManager 
 {
-	public static String SHARED_KEY = "secret_key";
+	private static String SHARED_KEY = "871a3f2c392e10ca2e04c442f1eedb65";
+	private static String SHARED_OBJECT_NAME = "whiteboard_contents";
 	
 	public AMFDataObj users_obj;
 
@@ -32,7 +36,7 @@ public class UserManager
 	public void userConnect(IClient client, AMFDataList params)
 	{
 		//TODO: put in user authentication stuff here
-		main_app.log("onConnect: " + client.getClientId());
+		main_app.log("UserManager.userConnect() " + client.getClientId());
 		
 		AMFDataObj curr_user_obj = (AMFDataObj) params.get(3);
 		String auth_key = params.getString(4);
@@ -40,12 +44,15 @@ public class UserManager
 		String room_name = params.getString(6);
 		String user_name = params.getString(7);
 		
-		//TODO: need to compare passed in key with encrypted key
+		
 		if(!validateKey(auth_key)){
-			main_app.log("user key invalid");
+			main_app.log("UserManager.userConnect() user key invalid");
 			client.rejectConnection();
 			return;
 		}
+		
+		client.setSharedObjectReadAccess(SHARED_OBJECT_NAME);
+		client.setSharedObjectWriteAccess(SHARED_OBJECT_NAME);
 		
 		curr_user_obj.put("suid", client.getClientId());
 		
@@ -60,7 +67,7 @@ public class UserManager
 	
 	public void userDisconnect(IClient client)
 	{
-		main_app.log("onDisconnect: " + client.getClientId());
+		main_app.log("UserManager.onDisconnect() " + client.getClientId());
 		
 		String curr_user_suid = Integer.toString(client.getClientId());
 		removeUser(curr_user_suid);
@@ -77,7 +84,14 @@ public class UserManager
 	
 	public void reportUserStats(IClient client, AMFDataList params)
 	{
-		main_app.log("user stats: "+params.get(3).toString());
+		main_app.log("UserManager.reportUserStats() user stats: "+params.get(3).toString());
+
+		AMFData dataObj = params.get(3);
+
+		int room_id = dataObj["room_id"];
+		
+		int type = dataObj.getType();
+
 	}
 	
 	public void updateUserInfo(String suid, AMFData user_obj)
@@ -95,29 +109,36 @@ public class UserManager
 	
 	private Boolean validateKey(String auth_string)
 	{
+		// TODO: restrict this to trusted hosts (localhost)
+		if (auth_string.equals("sample_auth_key")) {
+			main_app.log( "UserManger.validateKey() using sample_auth_key, just come right in." );
+			return true;
+		}
+		
+		main_app.log( "UserManager.validateKey() not using test_key, we'll need to verify the key for " + auth_string );
 		try{
 			String auth_hash = auth_string.split(":")[0];
 			String auth_time = auth_string.split(":")[1];
 			
-			main_app.log("curr time: "+new Date().getTime()/1000);
-			main_app.log("passed time: "+Integer.parseInt(auth_time));
+			main_app.log("UserManager.validateKey() curr time: "+new Date().getTime()/1000);
+			main_app.log("UserManager.validateKey() passed time: "+Integer.parseInt(auth_time));
 			
 			if(new Date().getTime()/1000 > Integer.parseInt(auth_time)){
-				main_app.log("Authentication time is stale");
+				main_app.log("UserManager.Authentication time is stale");
 				return false;
 			}
 			
 			String generated_hash=AeSimpleSHA1.SHA1(SHARED_KEY+auth_time);
-			main_app.log("Java output");
-			main_app.log(generated_hash);
+			main_app.log("UserManager.Java output");
+			main_app.log("UserManager.validateKey() "+generated_hash);
 			
 			return generated_hash.equals(auth_hash);
 		} catch (NoSuchAlgorithmException e){
-			main_app.log("Unable to generate hash");
+			main_app.log("UserManager.validateKey() Unable to generate hash");
 			return false;
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
-			main_app.log("Unable to generate hash");
+			main_app.log("UserManager.validateKey() Unable to generate hash");
 			return false;
 		}
 	}

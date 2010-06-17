@@ -1,6 +1,7 @@
 package com.infrno.multiplayer.util;
 
 import java.sql.*;
+import com.mysql.jdbc.Driver;
 
 import com.infrno.multiplayer.Application;
 
@@ -17,10 +18,15 @@ public class DatabaseClass
 	{
 		main_class = (Application) main_class_in;
 		
-		db_server = main_class.app_instance.getProperties().getPropertyStr("db_server");
-		db_username = main_class.app_instance.getProperties().getPropertyStr("db_username");
-		db_password = main_class.app_instance.getProperties().getPropertyStr("db_password");
-		db_instance_name = main_class.app_instance.getProperties().getPropertyStr("db_instance_name");
+//		db_server = main_class.app_instance.getProperties().getPropertyStr("db_server");
+//		db_username = main_class.app_instance.getProperties().getPropertyStr("db_username");
+//		db_password = main_class.app_instance.getProperties().getPropertyStr("db_password");
+//		db_instance_name = main_class.app_instance.getProperties().getPropertyStr("db_instance_name");
+		
+		db_server = "gold";
+		db_username = "sage_rw";
+		db_password = "sk00bysnack99";
+		db_instance_name = "sage";
 		
 		setupDBConnection();
 	}
@@ -30,7 +36,7 @@ public class DatabaseClass
     	try{
             Class.forName("com.mysql.jdbc.Driver");
         }catch ( ClassNotFoundException exception ){
-        	main_class.error( "Unable to load jdbc driver. ClassNotFoundException " + exception.getMessage( ) );
+        	main_class.error("DatabaseClass.setupDBConnection() Unable to load jdbc driver. ClassNotFoundException " + exception.getMessage( ) );
         }
     }
 	
@@ -48,7 +54,7 @@ public class DatabaseClass
 			rs = stmt.executeQuery(sql);
 		}catch(SQLException ex){
 			main_class.error(sql);
-			main_class.error("sqlexecuteException execute query: " + ex.toString());
+			main_class.error("DatabaseClass.executeQuery() sqlexecuteException execute query: " + ex.toString());
 		}
 		return rs;
 	}
@@ -63,7 +69,7 @@ public class DatabaseClass
 			conn.close();
 		}catch(SQLException ex){
 			main_class.error(sql);
-			main_class.error("sqlexecuteException execute update: " + ex.toString());
+			main_class.error("DatabaseClass.executeUpdate() sqlexecuteException execute update: " + ex.toString());
 		}
 		return rs;
 	}
@@ -71,6 +77,36 @@ public class DatabaseClass
 	/**
 	 * Methods to call
 	 */
+
+	public boolean saveSessionReport()
+	{
+		
+		try{
+			Connection conn = getDBConnection();
+			Statement stmt = conn.createStatement();
+			String sql = "insert into session_report "+
+				"(room_id, " +
+				"user_name, " +
+				"audio_bytes_per_second, " +
+				"video_bytes_per_second, " +
+				"data_bytes_per_second, " +
+				"current_bytes_per_second, " +
+				"max_bytes_per_second, " +
+				"byte_count, " +
+				"data_byte_count, " +
+				"video_byte_count, " +
+				"audio_loss_rate, " +
+				"dropped_frames) values";
+			
+			stmt.execute(sql);
+			conn.close();
+		}catch(SQLException e){
+			main_class.error("DatabaseClass.saveImage() sqlexecuteException: " + e.toString());
+		}
+		
+		return true;
+	}
+		
 	
 	public String sampleQuery(String some_val)
 	{
