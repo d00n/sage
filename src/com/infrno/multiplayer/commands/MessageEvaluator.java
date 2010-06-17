@@ -20,6 +20,7 @@ public class MessageEvaluator {
 		List< Evaluator > evaluators = new ArrayList< Evaluator >( );
 		evaluators.add( HideKeyWord.createEvaluator( ) );
 		evaluators.add( RollKeyWord.createEvaluator( ) );
+		evaluators.add( RKeyWord.createEvaluator( ) );
 		evaluators.add( RollCommand.createEvaluator( ) );
 		evaluators.add( RollWithModifierCommand.createEvaluator( ) );
 		evaluators.add( StringExpression.createEvaluator( ) );
@@ -33,6 +34,11 @@ public class MessageEvaluator {
 		}
 		
 		String match = tokenMatcher.group( );
+		
+		//
+		// TODO: 
+		// this should be logging using logger.
+		//
 		System.out.println( match );
 		
 		Iterator< Evaluator > evaluatorsIterator = evaluators.iterator( );

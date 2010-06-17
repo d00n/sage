@@ -1,15 +1,14 @@
 package com.infrno.multiplayer;
 
+import org.apache.log4j.Logger;
+
 import com.infrno.multiplayer.util.DatabaseClass;
-import com.wowza.wms.application.*;
-import com.wowza.wms.amf.*;
-import com.wowza.wms.client.*;
-import com.wowza.wms.logging.WMSLoggerFactory;
-import com.wowza.wms.module.*;
-import com.wowza.wms.request.*;
-import com.wowza.wms.sharedobject.ISharedObject;
-import com.wowza.wms.sharedobject.ISharedObjects;
-import com.wowza.wms.sharedobject.SharedObject;
+import com.wowza.wms.amf.AMFDataList;
+import com.wowza.wms.amf.AMFDataObj;
+import com.wowza.wms.application.IApplicationInstance;
+import com.wowza.wms.client.IClient;
+import com.wowza.wms.module.ModuleBase;
+import com.wowza.wms.request.RequestFunction;
 
 public class Application extends ModuleBase {
 	public IApplicationInstance app_instance;
@@ -19,14 +18,19 @@ public class Application extends ModuleBase {
 	public UserManager userManager;
 	public WhiteboardManager whiteboardManager;
 
+	private static Logger m_logger = Logger.getLogger( Application.class ); 
 	// public ISharedObject sharedObject;
 
 	public void onAppStart(IApplicationInstance appInstance) {
+		
+		
 		String fullname = appInstance.getApplication().getName() + "/"
 				+ appInstance.getName();
 		getLogger().info(
 				"Application.onAppStart() Infrno version 0.8.4 " + fullname);
 
+		m_logger.info( "starting application" );
+		
 		app_instance = appInstance;
 		chatManager = new ChatManager(this);
 		databaseManager = new DatabaseClass(this);
@@ -88,6 +92,7 @@ public class Application extends ModuleBase {
 
 	public void onConnect(IClient client, RequestFunction function,
 			AMFDataList params) {
+		m_logger.info( "onConnect" );
 		userManager.userConnect(client, params);
 	}
 

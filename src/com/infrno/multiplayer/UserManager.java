@@ -8,6 +8,7 @@ import com.infrno.multiplayer.util.AeSimpleSHA1;
 import com.wowza.wms.amf.AMFData;
 import com.wowza.wms.amf.AMFDataArray;
 import com.wowza.wms.amf.AMFDataList;
+import com.wowza.wms.amf.AMFDataMixedArray;
 import com.wowza.wms.amf.AMFDataObj;
 import com.wowza.wms.client.IClient;
 import com.wowza.wms.sharedobject.ISharedObject;
@@ -87,10 +88,13 @@ public class UserManager
 		main_app.log("UserManager.reportUserStats() user stats: "+params.get(3).toString());
 
 		AMFData dataObj = params.get(3);
+		if( dataObj.getType( ) != AMFData.DATA_TYPE_MIXED_ARRAY ) {
+			return;
+		}
 
-		int room_id = dataObj["room_id"];
-		
-		int type = dataObj.getType();
+		AMFDataMixedArray dataMixedArray = ( AMFDataMixedArray ) dataObj;
+		AMFData room_id = dataMixedArray.get( "room_id" );
+		int type = dataObj.getType( );
 
 	}
 	

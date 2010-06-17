@@ -25,7 +25,7 @@ public class ChatManager
 		ChatExpression chatExpression = messageEvaluator.getChatExpression( );
 		String interpretedMessage = chatExpression.interpret( null );
 		
-		main_app.log("ChatManager.chatToServer() chat from client came in: "+msgIn);
+		main_app.log( "ChatManager.chatToServer() chat from client came in: "+msgIn );
 		main_app.log( "ChagManager.chatToServer() interpreted cha=" + interpretedMessage );
 		
 		main_app.app_instance.broadcastMsg( "chatToUser", uname + ": " + interpretedMessage );
