@@ -52,7 +52,7 @@ public class RollWithModifierCommandTestCase {
 	
 	@Test
 	public void verifyParametersAreNotEmpty( ) {
-		RollCommand rollCommand = new RollCommand( Integer.valueOf( 5 ), Integer.valueOf( 10 ) );
+		RollCommand rollCommand = new RollCommand( "5d10", Integer.valueOf( 5 ), Integer.valueOf( 10 ) );
 		RollWithModifierCommand rollWithModifierCommand = new RollWithModifierCommand( rollCommand, Integer.valueOf( 5 ) );
 		
 		Pattern pattern = Pattern.compile( "\\S+" );
@@ -63,7 +63,7 @@ public class RollWithModifierCommandTestCase {
 	
 	@Test
 	public void verifyInvalidWhenParametersAreNotEmpty( ) {
-		RollCommand rollCommand = new RollCommand( Integer.valueOf( 5 ), Integer.valueOf( 10 ) );
+		RollCommand rollCommand = new RollCommand( "5d10", Integer.valueOf( 5 ), Integer.valueOf( 10 ) );
 		RollWithModifierCommand rollWithModifierCommand = new RollWithModifierCommand( rollCommand, Integer.valueOf( 5 ) );
 		
 		Pattern pattern = Pattern.compile( "\\S+" );
@@ -74,7 +74,7 @@ public class RollWithModifierCommandTestCase {
 	
 	@Test
 	public void interpretRolls( ) {
-		RollCommand rollCommand = new RollCommand( Integer.valueOf( 5 ), Integer.valueOf( 10 ) );
+		RollCommand rollCommand = new RollCommand( "5d10", Integer.valueOf( 5 ), Integer.valueOf( 10 ) );
 		RollWithModifierCommand rollWithModifierCommand = new RollWithModifierCommand( rollCommand, Integer.valueOf( 5 ) );
 		
 		String rolls = rollWithModifierCommand.interpret( null );

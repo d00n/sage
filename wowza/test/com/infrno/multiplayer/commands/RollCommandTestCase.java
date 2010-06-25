@@ -41,7 +41,7 @@ public class RollCommandTestCase {
 		Evaluator evaluator = RollCommand.createEvaluator( );
 		assertTrue( evaluator.isMatch( "1d3" ) );
 		assertTrue( evaluator.isMatch( "1D3" ) );
-		assertTrue( evaluator.isMatch( "444D33" ) );
+		assertTrue( evaluator.isMatch( "44D33" ) );
 		assertTrue( evaluator.isMatch( "1d33" ) );
 	}
 	
@@ -63,7 +63,7 @@ public class RollCommandTestCase {
 	
 	@Test
 	public void verifyParametersAreEmpty( ) {
-		RollCommand rollCommand = new RollCommand( Integer.valueOf( 10 ), Integer.valueOf( 10 ) );
+		RollCommand rollCommand = new RollCommand( "10d10", Integer.valueOf( 10 ), Integer.valueOf( 10 ) );
 		Pattern pattern = Pattern.compile( "\\S+" );
 		Matcher matcher = pattern.matcher( "" );
 		
@@ -72,7 +72,7 @@ public class RollCommandTestCase {
 	
 	@Test
 	public void verfifyInvalidWhenParametersAreNotEmpty( ) {
-		RollCommand rollCommand = new RollCommand( Integer.valueOf( 10 ), Integer.valueOf( 10 ) );
+		RollCommand rollCommand = new RollCommand( "10d10", Integer.valueOf( 10 ), Integer.valueOf( 10 ) );
 		Pattern pattern = Pattern.compile( "\\S+" );
 		Matcher matcher = pattern.matcher( "some value" );
 		
@@ -81,9 +81,8 @@ public class RollCommandTestCase {
 	
 	@Test
 	public void interpretRolls( ) {
-		RollCommand rollCommand = new RollCommand( Integer.valueOf( 5 ), Integer.valueOf( 10 ) );
+		RollCommand rollCommand = new RollCommand( "5d10", Integer.valueOf( 5 ), Integer.valueOf( 10 ) );
 		String rolls = rollCommand.interpret( null );
-		System.out.println( rolls );
 		
 		assertNotNull( rolls );
 		rolls = rolls.trim( );
