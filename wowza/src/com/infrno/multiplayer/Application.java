@@ -2,7 +2,6 @@ package com.infrno.multiplayer;
 
 import org.apache.log4j.Logger;
 
-import com.infrno.multiplayer.util.DatabaseClass;
 import com.wowza.wms.amf.AMFDataList;
 import com.wowza.wms.amf.AMFDataObj;
 import com.wowza.wms.application.IApplicationInstance;
@@ -13,7 +12,7 @@ import com.wowza.wms.request.RequestFunction;
 public class Application extends ModuleBase {
 	public IApplicationInstance app_instance;
 	public ChatManager chatManager;
-	public DatabaseClass databaseManager;
+	public DatabaseManager databaseManager;
 	public StreamManager streamManager;
 	public UserManager userManager;
 	public WhiteboardManager whiteboardManager;
@@ -33,7 +32,7 @@ public class Application extends ModuleBase {
 		
 		app_instance = appInstance;
 		chatManager = new ChatManager(this);
-		databaseManager = new DatabaseClass(this);
+		databaseManager = new DatabaseManager(this);
 		streamManager = new StreamManager(this);
 		userManager = new UserManager(this);
 		whiteboardManager = new WhiteboardManager(this);

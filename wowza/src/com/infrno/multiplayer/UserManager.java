@@ -85,17 +85,10 @@ public class UserManager
 	
 	public void reportUserStats(IClient client, AMFDataList params)
 	{
-		main_app.log("UserManager.reportUserStats() user stats: "+params.get(3).toString());
+		main_app.log("UserManager.reportUserStats()");
 
-		AMFData dataObj = params.get(3);
-		if( dataObj.getType( ) != AMFData.DATA_TYPE_MIXED_ARRAY ) {
-			return;
-		}
-
-		AMFDataMixedArray dataMixedArray = ( AMFDataMixedArray ) dataObj;
-		AMFData room_id = dataMixedArray.get( "room_id" );
-		int type = dataObj.getType( );
-
+		AMFDataObj amfDataObj = (AMFDataObj) params.get(3);		
+		main_app.databaseManager.saveSessionReport(amfDataObj);
 	}
 	
 	public void updateUserInfo(String suid, AMFData user_obj)
