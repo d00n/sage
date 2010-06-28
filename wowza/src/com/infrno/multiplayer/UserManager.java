@@ -3,6 +3,8 @@ package com.infrno.multiplayer;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import com.infrno.multiplayer.util.AeSimpleSHA1;
 import com.wowza.wms.amf.AMFData;
@@ -20,7 +22,6 @@ public class UserManager
 	private static String SHARED_OBJECT_NAME = "whiteboard_contents";
 	
 	public AMFDataObj users_obj;
-
 	private Application main_app;
 	
 	public UserManager(Application app) 
@@ -29,12 +30,14 @@ public class UserManager
 		users_obj = new AMFDataObj();
 	}
 	
+
+	
 	public void getUserStats()
 	{
 		main_app.app_instance.broadcastMsg("getUserStats");
 	}
 	
-	public void userConnect(IClient client, AMFDataList params)
+	public Boolean userConnect(IClient client, AMFDataList params)
 	{
 		//TODO: put in user authentication stuff here
 		main_app.log("UserManager.userConnect() " + client.getClientId());
@@ -49,7 +52,7 @@ public class UserManager
 		if(!validateKey(auth_key)){
 			main_app.log("UserManager.userConnect() user key invalid");
 			client.rejectConnection();
-			return;
+			return false;
 		}
 		
 		client.setSharedObjectReadAccess(SHARED_OBJECT_NAME);
@@ -64,12 +67,34 @@ public class UserManager
 //		updateUserInfo(Integer.toString(client.getClientId()), (AMFData) curr_user_obj);
 		
 		client.acceptConnection();
+		
+		
+		// Start the logging!
+		int users_count = this.users_obj.size();
+		main_app.log("UserManager.userConnect() user count: " + users_count);
+
+		main_app.databaseManager.saveSessionStartReport(curr_user_obj, client.getClientId());	
+		
+        main_app.log("trying to iterate over users..");
+		AMFDataObj amfDO_Users = this.users_obj;
+		List keys = amfDO_Users.getKeys();		
+		Iterator iter = keys.iterator();
+		while(iter.hasNext())
+		{
+		        String key = (String)iter.next();
+		        AMFData value = amfDO_Users.get(key);
+		        int itemType = value.getType();
+		        main_app.log("iterating over users_obj: key="+value.toString()+" (type="+itemType+")");
+		}
+
+		return true;
+
 	}
 	
 	public void userDisconnect(IClient client)
 	{
 		main_app.log("UserManager.onDisconnect() " + client.getClientId());
-		
+				
 		String curr_user_suid = Integer.toString(client.getClientId());
 		removeUser(curr_user_suid);
 	}

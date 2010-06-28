@@ -16,17 +16,32 @@ public class Application extends ModuleBase {
 	public StreamManager streamManager;
 	public UserManager userManager;
 	public WhiteboardManager whiteboardManager;
+	private Thread reportLoopThread;
+
 
 	private static Logger m_logger = Logger.getLogger( Application.class ); 
-	// public ISharedObject sharedObject;
+	
+	private static class ReportLoop implements Runnable {
+		private static final int SECONDS_BETWEEN_REPORTS = 10;
+		public Application main_app;
+        public void run() {
+        	while (true) {
+        		try {
+					Thread.sleep(SECONDS_BETWEEN_REPORTS * 1000);
+	        		main_app.app_instance.broadcastMsg("getUserStats");
+				} catch (InterruptedException e) {
+					main_app.log("ReportLoop.run() " + e.toString());
+				}
+        	}
+        }
+	}
 
-	public void onAppStart(IApplicationInstance appInstance) {
-		
+	public void onAppStart(IApplicationInstance appInstance) {	
 		
 		String fullname = appInstance.getApplication().getName() + "/"
 				+ appInstance.getName();
 		getLogger().info(
-				"Application.onAppStart() Infrno version 0.8.4 " + fullname);
+				"Application.onAppStart() Infrno version 0.8.5 " + fullname);
 
 		m_logger.info( "starting application" );
 		
@@ -36,86 +51,57 @@ public class Application extends ModuleBase {
 		streamManager = new StreamManager(this);
 		userManager = new UserManager(this);
 		whiteboardManager = new WhiteboardManager(this);
-
-		// ISharedObjects sharedObjects = app_instance.getSharedObjects(true);
-		// sharedObject = sharedObjects.getOrCreate("whiteboard_contents");
-		// sharedObjects.put("whiteboard_contents", sharedObject);
-		// sharedObject.lock();
-		// try
-		// {
-		// sharedObject.acquire();
-		// }
-		// catch (Exception e)
-		// {
-		//			
-		// }
-		// finally
-		// {
-		// sharedObject.unlock();
-		// }
 	}
 
 	public void onAppStop(IApplicationInstance appInstance) {
 		String fullname = appInstance.getApplication().getName() + "/"
 				+ appInstance.getName();
 		getLogger().info("Application.onAppStop() " + fullname);
-
-		// ISharedObjects sharedObjects = app_instance.getSharedObjects(false);
-		// ISharedObject so_streams = sharedObjects.get(app_instance.getName());
-		//		
-		// if (so_streams != null)
-		// {
-		// so_streams.lock();
-		// try
-		// {
-		// so_streams.release();
-		// }
-		// catch (Exception e)
-		// {
-		//				
-		// }
-		// finally
-		// {
-		// so_streams.unlock();
-		// }
-		// }
-		//				
+		
+		stopReportLoop();
+				
 		chatManager = null;
+		databaseManager.close();
 		databaseManager = null;
 		streamManager = null;
 		userManager = null;
 		whiteboardManager = null;
 		app_instance = null;
-
+	}
+	
+	public void startReportLoop() 
+	{
+		if (reportLoopThread == null)
+		{
+			ReportLoop reportLoop = new ReportLoop();
+			reportLoop.main_app = this;
+			reportLoopThread = new Thread(reportLoop);
+			reportLoopThread.start();
+		}
+	}
+	
+	public void stopReportLoop()
+	{
+		reportLoopThread.interrupt();
+		try {
+			reportLoopThread.join();
+		} catch (InterruptedException e) {
+			getLogger().info("Application.stopReportLoop() " + e.toString());
+		}
 	}
 
 	public void onConnect(IClient client, RequestFunction function,
 			AMFDataList params) {
 		m_logger.info( "onConnect" );
-		userManager.userConnect(client, params);
+		if (userManager.userConnect(client, params))
+		{
+			startReportLoop();
+		}
 	}
 
 	public void onDisconnect(IClient client) {
 		getLogger().info("Application.onDisconnect() ");
 		userManager.userDisconnect(client);
-
-		// sharedObject.flush();
-
-		// ISharedObjects sharedObjects = app_instance.getSharedObjects( true );
-		// sharedObject = sharedObjects.get( "whiteboard_contents" );
-		// sharedObject.lock();
-		// try{
-		// WMSLoggerFactory.getLogger(null).info("Application.onDisconnect() sharedObject.getName = "+
-		// sharedObject.getName());
-		// sharedObject.acquire();
-		// sharedObject.flush();
-		// }catch (Exception e){
-		// WMSLoggerFactory.getLogger(null).info("Application.onDisconnect() Error "+e.toString());
-		// }finally{
-		// WMSLoggerFactory.getLogger(null).info("Application.onDisconnect() sharedObject.unlock ");
-		// sharedObject.unlock();
-		// }
-
 	}
 
 	public void log(String msgIn) {
