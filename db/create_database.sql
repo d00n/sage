@@ -4,14 +4,16 @@ drop table if exists session_report;
 
 create table room (
   room_id int auto_increment,
-  room_name varchar(255),
+  created_at timestamp default now(),
   primary key (room_id)
 );
 
 create table session (
   session_id int auto_increment,
-  room_id int not null,
-  room_name varchar(255) not null,
+  application_name varchar(255),
+  wowza_client_id int,
+  room_id varchar(255),
+  room_name varchar(255),
   session_started_at timestamp default now(),
   session_ended_at timestamp,
   user_count int,
@@ -22,10 +24,10 @@ create table session (
 
 create table session_report (
   session_id int not null,
-  room_id int not null,
-  room_name varchar(255) not null,
-  user_id int not null,
-  user_name varchar(255) not null,
+  room_id varchar(255),
+  room_name varchar(255),
+  user_id varchar(255),
+  user_name varchar(255),
   reported_at timestamp default now(),
   audio_bytes_per_second int,
   video_bytes_per_second int,
@@ -37,6 +39,8 @@ create table session_report (
   video_byte_count int,
   audio_loss_rate int,
   dropped_frames int,
+  srtt int,
+  wowza_protocol varchar(255),
   index session_report_session_id_room_id_idx (session_id, room_id),
   index session_report_session_id_user_id_idx (session_id, user_id)
 );
