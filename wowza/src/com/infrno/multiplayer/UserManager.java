@@ -47,7 +47,7 @@ public class UserManager
 		String room_id = params.getString(5);
 		String room_name = params.getString(6);
 		String user_name = params.getString(7);
-		
+		String application_name = params.getString(8);
 		
 		if(!validateKey(auth_key)){
 			main_app.log("UserManager.userConnect() user key invalid");
@@ -68,27 +68,9 @@ public class UserManager
 		
 		client.acceptConnection();
 		
-		
-		// Start the logging!
-		int users_count = this.users_obj.size();
-		main_app.log("UserManager.userConnect() user count: " + users_count);
-
 		main_app.databaseManager.saveSessionStartReport(curr_user_obj, client.getClientId());	
-		
-        main_app.log("trying to iterate over users..");
-		AMFDataObj amfDO_Users = this.users_obj;
-		List keys = amfDO_Users.getKeys();		
-		Iterator iter = keys.iterator();
-		while(iter.hasNext())
-		{
-		        String key = (String)iter.next();
-		        AMFData value = amfDO_Users.get(key);
-		        int itemType = value.getType();
-		        main_app.log("iterating over users_obj: key="+value.toString()+" (type="+itemType+")");
-		}
 
 		return true;
-
 	}
 	
 	public void userDisconnect(IClient client)
@@ -97,6 +79,13 @@ public class UserManager
 				
 		String curr_user_suid = Integer.toString(client.getClientId());
 		removeUser(curr_user_suid);
+		
+		int heads = users_obj.size();
+		if (heads == 0)
+		{
+			main_app.databaseManager.saveSessionEndReport();
+			main_app.stopReportLoop();
+		}
 	}
 	
 	public void removeUser(String suid)

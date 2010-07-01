@@ -17,8 +17,9 @@ public class DatabaseManager
 	private String db_instance_name;
 	
 	private Connection _conn;
-	private PreparedStatement _sessionPreparedStatment;
 	private PreparedStatement _sessionReportPreparedStatment;
+	private PreparedStatement _sessionStartPreparedStatment;
+	private PreparedStatement _sessionEndPreparedStatment;
 	
 	private int _session_id = 0;
 	
@@ -57,11 +58,15 @@ public class DatabaseManager
 	
 	private void setupPreparedStatements(){
 		
-		String sessionSql = "insert into session "+
+		String sessionStartSql = "insert into session "+
 		"(room_id, " +
 		"room_name, " +
 		"wowza_client_id, "+
 		"application_name) values (?,?,?,?)";
+	
+		String sessionEndSql = "update session "+
+		"set session_ended_at = NOW() " +
+		"where session_id = ? ";
 	
 		String sessionReportSql = "insert into session_report "+
 		"(session_id, " +
@@ -79,11 +84,13 @@ public class DatabaseManager
 		"audio_loss_rate, " +
 		"srtt, " +
 		"wowza_protocol, " +
-		"dropped_frames) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		"dropped_frames, " +
+		"application_name) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	
 		try {
 			_sessionReportPreparedStatment = _conn.prepareStatement(sessionReportSql);
-			_sessionPreparedStatment = _conn.prepareStatement(sessionSql, PreparedStatement.RETURN_GENERATED_KEYS);			
+			_sessionEndPreparedStatment = _conn.prepareStatement(sessionEndSql);
+			_sessionStartPreparedStatment = _conn.prepareStatement(sessionStartSql, PreparedStatement.RETURN_GENERATED_KEYS);			
 		} catch (SQLException e) {
         	main_app.error("DatabaseManager.setupPreparedStatements() " + e.getMessage( ) );
 		}
@@ -109,22 +116,21 @@ public class DatabaseManager
 		String room_name 				= amfDataObj.getString("room_name");		
 
 		try{
-			_sessionPreparedStatment.clearParameters();
+			_sessionStartPreparedStatment.clearParameters();
 			
-			_sessionPreparedStatment.setString(1, main_app.app_instance.getName());
-			_sessionPreparedStatment.setString(2, room_name);
-			_sessionPreparedStatment.setInt(3, client_id);			
-			_sessionPreparedStatment.setString(4, main_app.app_instance.getApplication().getName());
-			
+			_sessionStartPreparedStatment.setString(1, main_app.app_instance.getName());
+			_sessionStartPreparedStatment.setString(2, room_name);
+			_sessionStartPreparedStatment.setInt(3, client_id);			
+			_sessionStartPreparedStatment.setString(4, main_app.app_instance.getApplication().getName());			
 						
-			_sessionPreparedStatment.execute();
+			_sessionStartPreparedStatment.execute();
 		}catch(SQLException e){
 			main_app.error("saveSessionStartReport(): execute(): " + e.toString());
 		}
 		
 		ResultSet rs;
 		try {
-			rs = _sessionPreparedStatment.getGeneratedKeys();
+			rs = _sessionStartPreparedStatment.getGeneratedKeys();
 			if (rs.next()) {
 			    _session_id = rs.getInt(1);
 			}
@@ -156,6 +162,7 @@ public class DatabaseManager
 		String room_id 					= amfDataObj.getString("room_id");
 		String user_name 				= amfDataObj.getString("user_name");
 		String room_name 				= amfDataObj.getString("room_name");		
+		String application_name			= amfDataObj.getString("application_name");		
 		
 		
 		// This belongs in a client header record, created on user connect
@@ -181,6 +188,7 @@ public class DatabaseManager
 			_sessionReportPreparedStatment.setInt(14, srtt);
 			_sessionReportPreparedStatment.setString(15, wowza_protocol);
 			_sessionReportPreparedStatment.setInt(16, droppedFrames);
+			_sessionReportPreparedStatment.setString(17, application_name);
 						
 			_sessionReportPreparedStatment.execute();
 		}catch(SQLException e){
@@ -190,7 +198,25 @@ public class DatabaseManager
 		return true;
 	}
 		
-//	
+
+	public void saveSessionEndReport()
+	{
+		main_app.log("DatabaseManager.saveSessionEndReport() session_id=" + _session_id);		
+
+		try{
+			_sessionEndPreparedStatment.clearParameters();
+			
+			_sessionEndPreparedStatment.setInt(1, _session_id);
+
+			_sessionEndPreparedStatment.execute();
+		}catch(SQLException e){
+			main_app.error("saveSessionEndReport(): execute(): " + e.toString());
+		}		
+	}
+
+
+
+	//	
 //	public String sampleQuery(String some_val)
 //	{
 //		try{
