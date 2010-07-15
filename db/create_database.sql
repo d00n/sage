@@ -24,6 +24,7 @@ create table session (
 
 create table session_report (
   session_id int not null,
+  application_name varchar(255),
   room_id varchar(255),
   room_name varchar(255),
   user_id varchar(255),

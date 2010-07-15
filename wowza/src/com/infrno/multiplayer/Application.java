@@ -22,7 +22,7 @@ public class Application extends ModuleBase {
 	private static Logger m_logger = Logger.getLogger( Application.class ); 
 	
 	private static class ReportLoop implements Runnable {
-		private static final int SECONDS_BETWEEN_REPORTS = 10;
+		private static final int SECONDS_BETWEEN_REPORTS = 30;
 		public Application main_app;
         public void run() {
         	while (true) {
@@ -38,10 +38,15 @@ public class Application extends ModuleBase {
 
 	public void onAppStart(IApplicationInstance appInstance) {	
 		
+		String appPath = appInstance.getApplication().getApplicationPath();
+		String appName = appInstance.getApplication().getName();
+		
+		String contextString = appInstance.getContextStr();
+		
 		String fullname = appInstance.getApplication().getName() + "/"
 				+ appInstance.getName();
 		getLogger().info(
-				"Application.onAppStart() Infrno version 0.8.5 " + fullname);
+				"Application.onAppStart() Infrno v0.8.5 appName=" +appName+ ", contextString=" +contextString);
 
 		m_logger.info( "starting application" );
 		
@@ -58,11 +63,10 @@ public class Application extends ModuleBase {
 				+ appInstance.getName();
 		getLogger().info("Application.onAppStop() " + fullname);
 		
-		stopReportLoop();
-				
-		chatManager = null;
 		databaseManager.close();
 		databaseManager = null;
+				
+		chatManager = null;
 		streamManager = null;
 		userManager = null;
 		whiteboardManager = null;
@@ -92,7 +96,18 @@ public class Application extends ModuleBase {
 
 	public void onConnect(IClient client, RequestFunction function,
 			AMFDataList params) {
-		m_logger.info( "onConnect" );
+		m_logger.info( "onConnect" );			
+		
+		String appName = app_instance.getApplication().getName();
+		String inboundAppName = params.getString(8);
+		
+		log("Application.onConnect() appName(" +appName+ ") inboundAppName(" +inboundAppName +")");
+//		if (!appName.equals(inboundAppName))
+//		{
+//			client.rejectConnection();
+//			return;
+//		}
+				
 		if (userManager.userConnect(client, params))
 		{
 			startReportLoop();
@@ -102,6 +117,12 @@ public class Application extends ModuleBase {
 	public void onDisconnect(IClient client) {
 		getLogger().info("Application.onDisconnect() ");
 		userManager.userDisconnect(client);
+		
+		if (app_instance.getClientCount() == 0)
+		{
+			databaseManager.saveSessionEndReport();
+			stopReportLoop();
+		}
 	}
 
 	public void log(String msgIn) {
