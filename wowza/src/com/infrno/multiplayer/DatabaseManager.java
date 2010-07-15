@@ -32,7 +32,7 @@ public class DatabaseManager
 //		db_password = main_class.app_instance.getProperties().getPropertyStr("db_password");
 //		db_instance_name = main_class.app_instance.getProperties().getPropertyStr("db_instance_name");
 		
-		db_server = "gold";
+		db_server = "localhost";
 		db_username = "sage_rw";
 		db_password = "sk00bysnack99";
 		db_instance_name = "sage";
