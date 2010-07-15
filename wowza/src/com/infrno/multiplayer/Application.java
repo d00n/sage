@@ -31,6 +31,7 @@ public class Application extends ModuleBase {
 	        		main_app.app_instance.broadcastMsg("getUserStats");
 				} catch (InterruptedException e) {
 					main_app.log("ReportLoop.run() " + e.toString());
+					return;
 				}
         	}
         }
@@ -39,14 +40,11 @@ public class Application extends ModuleBase {
 	public void onAppStart(IApplicationInstance appInstance) {	
 		
 		String appPath = appInstance.getApplication().getApplicationPath();
-		String appName = appInstance.getApplication().getName();
-		
+		String appName = appInstance.getApplication().getName();		
 		String contextString = appInstance.getContextStr();
 		
-		String fullname = appInstance.getApplication().getName() + "/"
-				+ appInstance.getName();
-		getLogger().info(
-				"Application.onAppStart() Infrno v0.8.5 appName=" +appName+ ", contextString=" +contextString);
+		String fullname = appInstance.getApplication().getName() + "/" + appInstance.getName();
+		getLogger().info("Application.onAppStart() Infrno v0.8.5 appName=" +appName+ ", contextString=" +contextString);
 
 		m_logger.info( "starting application" );
 		
@@ -63,6 +61,9 @@ public class Application extends ModuleBase {
 				+ appInstance.getName();
 		getLogger().info("Application.onAppStop() " + fullname);
 		
+		stopReportLoop();
+		
+		databaseManager.saveSessionEndReport();		
 		databaseManager.close();
 		databaseManager = null;
 				
@@ -99,15 +100,8 @@ public class Application extends ModuleBase {
 		m_logger.info( "onConnect" );			
 		
 		String appName = app_instance.getApplication().getName();
-		String inboundAppName = params.getString(8);
-		
-		log("Application.onConnect() appName(" +appName+ ") inboundAppName(" +inboundAppName +")");
-//		if (!appName.equals(inboundAppName))
-//		{
-//			client.rejectConnection();
-//			return;
-//		}
-				
+		log("Application.onConnect() appName=" +appName);
+						
 		if (userManager.userConnect(client, params))
 		{
 			startReportLoop();
@@ -118,11 +112,11 @@ public class Application extends ModuleBase {
 		getLogger().info("Application.onDisconnect() ");
 		userManager.userDisconnect(client);
 		
-		if (app_instance.getClientCount() == 0)
-		{
-			databaseManager.saveSessionEndReport();
-			stopReportLoop();
-		}
+//		if (app_instance.getClientCount() == 0)
+//		{
+//			databaseManager.saveSessionEndReport();
+//			stopReportLoop();
+//		}
 	}
 
 	public void log(String msgIn) {

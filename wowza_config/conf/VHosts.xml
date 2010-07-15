@@ -1,0 +1,19 @@
+<Root>
+  <VHosts>
+    <!--VHost>
+      <Name>_defaultVHost_</Name>
+      <ConfigDir>${com.wowza.wms.ConfigHome}</ConfigDir>
+      <ConnectionLimit>0</ConnectionLimit>
+    </VHost-->
+    <VHost>
+      <Name>chat</Name>
+      <ConfigDir>${com.wowza.wms.ConfigHome}/vhosts/chat</ConfigDir>
+      <ConnectionLimit>0</ConnectionLimit>
+    </VHost>
+    <VHost>
+      <Name>whiteboard</Name>
+      <ConfigDir>${com.wowza.wms.ConfigHome}/vhosts/whiteboard</ConfigDir>
+      <ConnectionLimit>0</ConnectionLimit>
+    </VHost>
+  </VHosts>
+</Root>
