@@ -144,7 +144,14 @@ public class DatabaseManager
 
 	public boolean saveSessionReport(AMFDataObj amfDataObj)
 	{
-		main_app.log("DatabaseManager.saveSessionReport()");
+		main_app.log("DatabaseManager.saveSessionReport() appName=" 
+				+ main_app.app_instance.getApplication().getName() 
+				+" session_id="
+				+ _session_id
+				+" room_id="
+				+amfDataObj.getString("room_id")
+				+" user_name="
+				+amfDataObj.getString("user_name"));
 		
 		String uname 					= amfDataObj.getString("uname");
 		String wowza_protocol 			= amfDataObj.getString("wowza_protocol");		
@@ -162,7 +169,9 @@ public class DatabaseManager
 		String room_id 					= amfDataObj.getString("room_id");
 		String user_name 				= amfDataObj.getString("user_name");
 		String room_name 				= amfDataObj.getString("room_name");		
-		String application_name			= amfDataObj.getString("application_name");		
+		String application_name			= main_app.app_instance.getApplication().getName();	
+		
+		
 		
 		
 		// This belongs in a client header record, created on user connect
@@ -212,59 +221,5 @@ public class DatabaseManager
 		}catch(SQLException e){
 			main_app.error("saveSessionEndReport(): execute(): " + e.toString());
 		}		
-	}
-
-
-
-	//	
-//	public String sampleQuery(String some_val)
-//	{
-//		try{
-//			String sql = "SELECT some_prop WHERE value = "+some_val;
-//			ResultSet rs = executeQuery(_conn,sql);
-//			if(rs.next() == true){
-//				//iterate over result
-//			}
-//			conn.close();
-//		}catch(SQLException e){
-//			main_app.error("sqlexecuteException: " + e.toString());
-//		}
-//		return "some value";
-//	}
-//	
-//	public void sampleUpdate(String event_id)
-//	{
-//		String sql = "INSERT INTO log_event VALUES (LAST_INSERT_ID(),"+event_id+")";
-//		int rs = executeUpdate(sql);
-//	}
-//	
-//	private ResultSet executeQuery(Connection conn, String sql)
-//	{
-//		ResultSet rs = null;
-//		Statement stmt = null;
-//		try{
-//			stmt = conn.createStatement();
-//			rs = stmt.executeQuery(sql);
-//		}catch(SQLException ex){
-//			main_app.error(sql);
-//			main_app.error("DatabaseManager.executeQuery() sqlexecuteException execute query: " + ex.toString());
-//		}
-//		return rs;
-//	}
-//	private int executeUpdate(String sql)
-//	{
-//		int rs=0;
-//		try{
-//			Statement stmt = null;
-//			stmt = conn.createStatement();
-//			rs = stmt.executeUpdate(sql);
-//			conn.close();
-//		}catch(SQLException ex){
-//			main_app.error(sql);
-//			main_app.error("DatabaseManager.executeUpdate() sqlexecuteException execute update: " + ex.toString());
-//		}
-//		return rs;
-//	}
-	
-	
+	}	
 }

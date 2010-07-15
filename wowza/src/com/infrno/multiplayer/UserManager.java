@@ -79,13 +79,6 @@ public class UserManager
 				
 		String curr_user_suid = Integer.toString(client.getClientId());
 		removeUser(curr_user_suid);
-		
-		int heads = users_obj.size();
-		if (heads == 0)
-		{
-			main_app.databaseManager.saveSessionEndReport();
-			main_app.stopReportLoop();
-		}
 	}
 	
 	public void removeUser(String suid)
@@ -99,8 +92,6 @@ public class UserManager
 	
 	public void reportUserStats(IClient client, AMFDataList params)
 	{
-		main_app.log("UserManager.reportUserStats()");
-
 		AMFDataObj amfDataObj = (AMFDataObj) params.get(3);		
 		main_app.databaseManager.saveSessionReport(amfDataObj);
 	}
@@ -126,7 +117,7 @@ public class UserManager
 			return true;
 		}
 		
-		main_app.log( "UserManager.validateKey() not using test_key, we'll need to verify the key for " + auth_string );
+		main_app.log( "UserManager.validateKey() verifing key:" + auth_string );
 		try{
 			String auth_hash = auth_string.split(":")[0];
 			String auth_time = auth_string.split(":")[1];
