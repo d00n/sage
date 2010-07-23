@@ -1,5 +1,6 @@
 drop table if exists room;
 drop table if exists session;
+drop table if exists session_member;
 drop table if exists session_report;
 
 create table room (
@@ -21,6 +22,45 @@ create table session (
   primary key (session_id),
   index session_room_id_idx (room_id)
 );
+
+create table session_member (
+  session_id int auto_increment,
+  user_name varchar(255),
+  application_name varchar(255),
+  application_version varchar(255),
+  room_id varchar(255),
+  room_name varchar(255),
+  avHardwareDisable char(1)
+  
+};
+
+hasAccessibility ACC 
+hasAudio A 
+hasAudioEncoder AE 
+hasEmbeddedVideo EV 
+hasIME IME 
+hasMP3 MP3 
+hasPrinting PR 
+hasScreenBroadcast SB 
+hasScreenPlayback SP 
+hasStreamingAudio SA 
+hasStreamingVideo SV 
+hasTLS TLS 
+hasVideoEncoder VE 
+isDebugger DEB 
+language L 
+localFileReadDisable LFD 
+manufacturer M 
+maxLevelIDC ML 
+os OS 
+pixelAspectRatio AR 
+playerType PT 
+screenColor COL 
+screenDPI DP 
+screenResolutionX R 
+screenResolutionY R 
+version V 
+
 
 create table session_report (
   session_id int not null,

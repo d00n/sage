@@ -48,8 +48,11 @@ public class UserManager
 		String room_name = params.getString(6);
 		String user_name = params.getString(7);
 		String application_name = params.getString(8);
+		String application_version = params.getString(9);
+		String capabilities =  params.getString(10);
+
 		
-		if(!validateKey(auth_key)){
+		if(main_app.app_instance.getClientCount() > 3 || !validateKey(auth_key)){
 			main_app.log("UserManager.userConnect() user key invalid");
 			client.rejectConnection();
 			return false;
@@ -69,6 +72,10 @@ public class UserManager
 		client.acceptConnection();
 		
 		main_app.databaseManager.saveSessionStartReport(curr_user_obj, client.getClientId());	
+		main_app.databaseManager.saveSessionMemberReport(user_name, room_id, room_name, 
+				application_name,
+				application_version, 
+				capabilities);	
 
 		return true;
 	}

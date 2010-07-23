@@ -12,6 +12,7 @@ public class ChatManager
 	public ChatManager(Application app) 
 	{
 		main_app = app;
+		
 	}
 	
 	public void chatToServer( IClient client, AMFDataList msgObj )

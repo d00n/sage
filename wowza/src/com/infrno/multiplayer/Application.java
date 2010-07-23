@@ -17,8 +17,7 @@ public class Application extends ModuleBase {
 	public UserManager userManager;
 	public WhiteboardManager whiteboardManager;
 	private Thread reportLoopThread;
-
-
+	
 	private static Logger m_logger = Logger.getLogger( Application.class ); 
 	
 	private static class ReportLoop implements Runnable {
@@ -111,12 +110,6 @@ public class Application extends ModuleBase {
 	public void onDisconnect(IClient client) {
 		getLogger().info("Application.onDisconnect() ");
 		userManager.userDisconnect(client);
-		
-//		if (app_instance.getClientCount() == 0)
-//		{
-//			databaseManager.saveSessionEndReport();
-//			stopReportLoop();
-//		}
 	}
 
 	public void log(String msgIn) {
