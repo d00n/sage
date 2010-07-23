@@ -47,9 +47,10 @@ public class UserManager
 		String room_id = params.getString(5);
 		String room_name = params.getString(6);
 		String user_name = params.getString(7);
-		String application_name = params.getString(8);
-		String application_version = params.getString(9);
-		String capabilities =  params.getString(10);
+		String user_id = params.getString(8);
+		String application_name = params.getString(9);
+		String application_version = params.getString(10);
+		String capabilities =  params.getString(11);
 
 		
 		if(main_app.app_instance.getClientCount() > 3 || !validateKey(auth_key)){
@@ -71,10 +72,22 @@ public class UserManager
 		
 		client.acceptConnection();
 		
-		main_app.databaseManager.saveSessionStartReport(curr_user_obj, client.getClientId());	
-		main_app.databaseManager.saveSessionMemberReport(user_name, room_id, room_name, 
+		main_app.log("client getPageUrl "+client.getPageUrl());
+		main_app.log("client getUri "+client.getUri());
+		main_app.log("client getQueryStr "+client.getQueryStr());
+		main_app.log("client getReferrer "+client.getReferrer());
+		main_app.log("client getUri "+client.getUri());
+		
+		main_app.databaseManager.saveSessionStart(curr_user_obj);	
+		main_app.databaseManager.saveSessionMemberStart(room_id, 
+				room_name,
+				user_id, 
+				user_name, 
 				application_name,
 				application_version, 
+				client.getClientId(),
+				client.getFlashVer(),
+				client.getIp(),
 				capabilities);	
 
 		return true;
@@ -83,6 +96,8 @@ public class UserManager
 	public void userDisconnect(IClient client)
 	{
 		main_app.log("UserManager.onDisconnect() " + client.getClientId());
+		
+		main_app.databaseManager.saveSessionMemberEnd(client.getClientId());
 				
 		String curr_user_suid = Integer.toString(client.getClientId());
 		removeUser(curr_user_suid);
@@ -99,8 +114,20 @@ public class UserManager
 	
 	public void reportUserStats(IClient client, AMFDataList params)
 	{
+		main_app.log("client getLastValidateTime "+client.getLastValidateTime());
+
 		AMFDataObj amfDataObj = (AMFDataObj) params.get(3);		
-		main_app.databaseManager.saveSessionReport(amfDataObj);
+		main_app.databaseManager.saveSessionReport(amfDataObj,
+				client.getLastValidateTime(),
+				client.getPingRoundTripTime(),
+				(long) client.getMediaIOPerformanceCounter().getFileInBytesRate(),
+				(long) client.getMediaIOPerformanceCounter().getFileOutBytesRate(),
+				(long) client.getMediaIOPerformanceCounter().getMessagesInBytesRate(),
+				client.getMediaIOPerformanceCounter().getMessagesInCountRate(),
+				(long) client.getMediaIOPerformanceCounter().getMessagesLossBytesRate(),
+				client.getMediaIOPerformanceCounter().getMessagesLossCountRate(),
+				(long) client.getMediaIOPerformanceCounter().getMessagesOutBytesRate(),
+				client.getMediaIOPerformanceCounter().getMessagesOutCountRate());
 	}
 	
 	public void updateUserInfo(String suid, AMFData user_obj)
