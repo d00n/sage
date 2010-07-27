@@ -114,10 +114,11 @@ public class UserManager
 			main_app.error("DatabaseManager not online"+ e.getMessage());
 		}
 		
-		ISharedObjects sharedObjects = main_app.app_instance.getSharedObjects(true);
-		ISharedObject whiteboard_contents = sharedObjects.get("whiteboard_contents");
+//		ISharedObjects sharedObjects = main_app.app_instance.getSharedObjects(true);
+//		ISharedObject whiteboard_contents = sharedObjects.get("whiteboard_contents");
+//		
+//		main_app.log("so size: " +whiteboard_contents.size() );
 		
-		main_app.log("so size: " +whiteboard_contents.size() );
 		
 		
 		String curr_user_suid = Integer.toString(client.getClientId());

@@ -47,7 +47,7 @@ public class RollWithModifierCommand implements ChatExpression {
 
 class RollWithModifierEvaluator implements Evaluator {
 
-	private static Pattern m_pattern = Pattern.compile( "^(\\S+)\\+(\\d+)$" );
+	private static Pattern m_pattern = Pattern.compile( "^(\\S+)([\\+-])(\\d+)$" );
 	
 	@Override
 	public ChatExpression createExpression( String token ) {
@@ -58,7 +58,7 @@ class RollWithModifierEvaluator implements Evaluator {
 		
 		System.out.println( "this is a match" );
 		System.out.println( "matcher group count = " + matcher.groupCount( ) );
-		if( matcher.groupCount( ) != 2 ) {
+		if( matcher.groupCount( ) != 3 ) {
 			return null;
 		}
 		
@@ -67,11 +67,16 @@ class RollWithModifierEvaluator implements Evaluator {
 		if( !rollCommandEvaluator.isMatch( rollCommandTokenString ) ) {
 			return null;
 		}
-		
+				
 		RollCommand rollCommand = ( RollCommand ) rollCommandEvaluator.createExpression( rollCommandTokenString );
-		
-		String modifierString = matcher.group( 2 );
+		String modifierString = matcher.group( 3 );
 		Integer modifier = Integer.decode( modifierString );
+		
+		String rollCommandSignString = matcher.group( 2 );
+		if( rollCommandSignString.equals("-") ) {
+			modifier = modifier * -1 ;
+		}
+
 		System.out.println( "modifier=" + modifier );
 		
 		RollWithModifierCommand rollWithModifierCommand = new RollWithModifierCommand( rollCommand, modifier );
@@ -86,7 +91,7 @@ class RollWithModifierEvaluator implements Evaluator {
 			return false;
 		}
 		
-		if( matcher.groupCount( ) != 2 ) {
+		if( matcher.groupCount( ) != 3 ) {
 			return false;
 		}
 		

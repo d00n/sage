@@ -12,7 +12,7 @@ public class RollCommand implements ChatExpression {
 		return new RollCommandEvaluator( );
 	}
 	
-	private static String MAGIC_ROLL = "rolled 42";
+	private static String MAGIC_ROLL = "total=42";
 	private Integer m_numberOfDie;
 	private Integer m_numberOfSides;
 	private int m_modifier;
@@ -39,36 +39,59 @@ public class RollCommand implements ChatExpression {
 
 	@Override
 	public String interpret( Map< String, String > context ) {
+		
+		StringBuffer result = new StringBuffer( );
+		
+		// This will be used when hide roll gets implemented
+//		String user_name = context.get("user_name");
+//		result.append(user_name);
+		
+		result.append("rolled ");
+		result.append(m_token);
+		
+		if (m_modifier < 0) {
+			result.append(m_modifier);
+		} else if (m_modifier > 0) {
+			result.append('+');			
+			result.append(m_modifier);			
+		}
+		
+		result.append(": ");
+
 		if( m_numberOfDie.intValue( ) <= 0 ) {
-			return MAGIC_ROLL;
+			result.append(MAGIC_ROLL);
+			return result.toString();
 		}
 		
 		if( m_numberOfDie.intValue( ) > 100 ) {
-			return MAGIC_ROLL;
+			result.append(MAGIC_ROLL);
+			return result.toString();
 		}
 		
 		if( m_numberOfSides.intValue( ) <= 0 ) {
-			return MAGIC_ROLL;
+			result.append(MAGIC_ROLL);
+			return result.toString();
 		}
 		
 		if( m_numberOfSides.intValue( ) > 100 ) {
-			return MAGIC_ROLL;
+			result.append(MAGIC_ROLL);
+			return result.toString();
 		}
 		
-		Random random = new Random( );
-		StringBuffer result = new StringBuffer( );
-		result.append( m_token );
-		result.append( ": " );
 		
+		Random random = new Random( );
+	
 		int total = 0;
 		for( int i = 0; i < m_numberOfDie.intValue( ); i++ ) {
-			int roll = random.nextInt( m_numberOfSides ) + 1 + m_modifier;
+			int roll = random.nextInt( m_numberOfSides ) + 1;
 			total += roll;
 			result.append( roll );
 			result.append( ", " );
 		}
 		
-		result.append( "total = " );
+		total += m_modifier;
+		
+		result.append( "total=" );
 		result.append( total );
 		
 		return result.toString( );

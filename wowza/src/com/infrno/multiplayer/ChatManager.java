@@ -1,5 +1,8 @@
 package com.infrno.multiplayer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.infrno.multiplayer.commands.ChatExpression;
 import com.infrno.multiplayer.commands.MessageEvaluator;
 import com.wowza.wms.amf.AMFDataList;
@@ -24,7 +27,10 @@ public class ChatManager
 		
 		MessageEvaluator messageEvaluator = new MessageEvaluator( msgIn );
 		ChatExpression chatExpression = messageEvaluator.getChatExpression( );
-		String interpretedMessage = chatExpression.interpret( null );
+		
+		Map <String, String> context = new HashMap<String, String>();
+		context.put("user_name", uname);
+		String interpretedMessage = chatExpression.interpret( context );
 		
 		main_app.log( "ChatManager.chatToServer() chat from client came in: "+msgIn );
 		main_app.log( "ChagManager.chatToServer() interpreted cha=" + interpretedMessage );

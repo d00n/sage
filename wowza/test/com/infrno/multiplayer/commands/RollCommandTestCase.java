@@ -1,5 +1,7 @@
 package com.infrno.multiplayer.commands;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,7 +84,11 @@ public class RollCommandTestCase {
 	@Test
 	public void interpretRolls( ) {
 		RollCommand rollCommand = new RollCommand( "5d10", Integer.valueOf( 5 ), Integer.valueOf( 10 ) );
-		String rolls = rollCommand.interpret( null );
+		
+		Map <String, String> context = new HashMap<String, String>();
+		context.put("user_name", "billy");
+
+		String rolls = rollCommand.interpret( context );
 		
 		assertNotNull( rolls );
 		rolls = rolls.trim( );
