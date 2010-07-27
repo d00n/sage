@@ -62,8 +62,12 @@ public class Application extends ModuleBase {
 		
 		stopReportLoop();
 		
-		databaseManager.saveSessionEndReport();		
-		databaseManager.close();
+		try {
+			databaseManager.saveSessionEndReport();		
+			databaseManager.close();
+		} catch (Exception e) {
+			error("DatabaseManager not online"+ e.getMessage());
+		}
 		databaseManager = null;
 				
 		chatManager = null;

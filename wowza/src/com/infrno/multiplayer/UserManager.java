@@ -15,6 +15,7 @@ import com.wowza.wms.amf.AMFDataObj;
 import com.wowza.wms.client.IClient;
 import com.wowza.wms.sharedobject.ISharedObject;
 import com.wowza.wms.sharedobject.ISharedObjects;
+import com.wowza.wms.sharedobject.SharedObject;
 
 public class UserManager 
 {
@@ -40,7 +41,7 @@ public class UserManager
 	public Boolean userConnect(IClient client, AMFDataList params)
 	{
 		//TODO: put in user authentication stuff here
-		main_app.log("UserManager.userConnect() " + client.getClientId());
+		main_app.log("UserManager.userConnect() clientId:" + client.getClientId() +", client count:"+ main_app.app_instance.getClientCount());
 		
 		AMFDataObj curr_user_obj = (AMFDataObj) params.get(3);
 		String auth_key = params.getString(4);
@@ -52,12 +53,18 @@ public class UserManager
 		String application_version = params.getString(10);
 		String capabilities =  params.getString(11);
 
-		
-		if(main_app.app_instance.getClientCount() > 3 || !validateKey(auth_key)){
+		if(!validateKey(auth_key)){
 			main_app.log("UserManager.userConnect() user key invalid");
 			client.rejectConnection();
 			return false;
 		}
+		
+		// TODO: allow client to connect when room is full, send a 'no vacancy' message, then disconnect them.
+//		if(main_app.app_instance.getClientCount() > 3){
+//			main_app.log("UserManager.userConnect() room is full");
+//			client.rejectConnection();
+//			return false;
+//		}
 		
 		client.setSharedObjectReadAccess(SHARED_OBJECT_NAME);
 		client.setSharedObjectWriteAccess(SHARED_OBJECT_NAME);
@@ -72,14 +79,15 @@ public class UserManager
 		
 		client.acceptConnection();
 		
-		main_app.log("client getPageUrl "+client.getPageUrl());
-		main_app.log("client getUri "+client.getUri());
-		main_app.log("client getQueryStr "+client.getQueryStr());
-		main_app.log("client getReferrer "+client.getReferrer());
-		main_app.log("client getUri "+client.getUri());
+//		main_app.log("client getPageUrl "+client.getPageUrl());
+//		main_app.log("client getUri "+client.getUri());
+//		main_app.log("client getQueryStr "+client.getQueryStr());
+//		main_app.log("client getReferrer "+client.getReferrer());
+//		main_app.log("client getUri "+client.getUri());
 		
-		main_app.databaseManager.saveSessionStart(curr_user_obj);	
-		main_app.databaseManager.saveSessionMemberStart(room_id, 
+		try {
+			main_app.databaseManager.saveSessionStart(curr_user_obj);	
+			main_app.databaseManager.saveSessionMemberStart(room_id, 
 				room_name,
 				user_id, 
 				user_name, 
@@ -89,7 +97,10 @@ public class UserManager
 				client.getFlashVer(),
 				client.getIp(),
 				capabilities);	
-
+		} catch (Exception e) {
+			main_app.error("DatabaseManager not online"+ e.getMessage());
+		}
+		
 		return true;
 	}
 	
@@ -97,8 +108,18 @@ public class UserManager
 	{
 		main_app.log("UserManager.onDisconnect() " + client.getClientId());
 		
-		main_app.databaseManager.saveSessionMemberEnd(client.getClientId());
-				
+		try {
+			main_app.databaseManager.saveSessionMemberEnd(client.getClientId());
+		} catch (Exception e) {
+			main_app.error("DatabaseManager not online"+ e.getMessage());
+		}
+		
+		ISharedObjects sharedObjects = main_app.app_instance.getSharedObjects(true);
+		ISharedObject whiteboard_contents = sharedObjects.get("whiteboard_contents");
+		
+		main_app.log("so size: " +whiteboard_contents.size() );
+		
+		
 		String curr_user_suid = Integer.toString(client.getClientId());
 		removeUser(curr_user_suid);
 	}
@@ -117,7 +138,9 @@ public class UserManager
 		main_app.log("client getLastValidateTime "+client.getLastValidateTime());
 
 		AMFDataObj amfDataObj = (AMFDataObj) params.get(3);		
-		main_app.databaseManager.saveSessionReport(amfDataObj,
+
+		try {
+			main_app.databaseManager.saveSessionReport(amfDataObj,
 				client.getLastValidateTime(),
 				client.getPingRoundTripTime(),
 				(long) client.getMediaIOPerformanceCounter().getFileInBytesRate(),
@@ -128,6 +151,9 @@ public class UserManager
 				client.getMediaIOPerformanceCounter().getMessagesLossCountRate(),
 				(long) client.getMediaIOPerformanceCounter().getMessagesOutBytesRate(),
 				client.getMediaIOPerformanceCounter().getMessagesOutCountRate());
+		} catch (Exception e) {
+			main_app.error("DatabaseManager not online"+ e.getMessage());
+		}
 	}
 	
 	public void updateUserInfo(String suid, AMFData user_obj)
