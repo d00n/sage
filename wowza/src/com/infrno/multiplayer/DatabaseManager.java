@@ -18,6 +18,7 @@ public class DatabaseManager {
 	private Connection _conn;
 	private PreparedStatement _sessionStart_ps;
 	private PreparedStatement _sessionEnd_ps;
+	private PreparedStatement _sessionFlap_ps;
 	private PreparedStatement _sessionMemberStart_ps;
 	private PreparedStatement _sessionMemberEnd_ps;
 	private PreparedStatement _sessionReport_ps;
@@ -153,10 +154,22 @@ public class DatabaseManager {
 			+ "user_id "
 			+ ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
+		String sessionFlapSql = "insert into session_flap_report"
+			+ "(session_id, " 
+			+ "application_name, " 
+			+ "room_name, "
+			+ "room_id, " 
+			+ "user_name, " 
+			+ "user_id "
+			+ "reported_at "
+			+ "server_mode "
+			+ ") values (?,?,?,?,?,?,?,?)";
+		
 		try {
 			_sessionMemberStart_ps = _conn.prepareStatement(sessionMemberStartSql);
 			_sessionMemberEnd_ps = _conn.prepareStatement(sessionMemberEndSql);
 			_sessionReport_ps = _conn.prepareStatement(sessionReportSql);
+			_sessionFlap_ps = _conn.prepareStatement(sessionFlapSql);
 			_sessionEnd_ps = _conn.prepareStatement(sessionEndSql);
 			_sessionStart_ps = _conn.prepareStatement(sessionStartSql, PreparedStatement.RETURN_GENERATED_KEYS);
 		} catch (SQLException e) {
@@ -479,6 +492,32 @@ public class DatabaseManager {
 		}
 	}
 	
+	public void saveSessionMemberFlap(String application_name,
+			String room_name,  
+			String room_id,
+			String user_name, 			
+			String user_id, 
+			String reported_at, 
+			String server_mode) {
+		
+		try {
+			_sessionFlap_ps.clearParameters();
+			
+			_sessionFlap_ps.setInt(1, _session_id);
+			_sessionFlap_ps.setString(2, application_name);
+			_sessionFlap_ps.setString(3, room_name);
+			_sessionFlap_ps.setString(4, room_id);
+			_sessionFlap_ps.setString(5, user_name);
+			_sessionFlap_ps.setString(6, user_id);
+			_sessionFlap_ps.setString(7, reported_at);
+			_sessionFlap_ps.setString(8, server_mode);
+			_sessionFlap_ps.execute();
+		} catch(SQLException e){
+			main_app.error("saveSessionMemberFlap() sqlexecuteException: "
+					+ e.toString());
+		}
+			
+	}
 
 	public void saveSessionMemberEnd(int wowza_client_id) {
 		main_app.log("DatabaseManager.saveSessionMemberEnd() session_id="

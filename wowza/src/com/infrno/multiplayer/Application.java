@@ -145,8 +145,8 @@ public class Application extends ModuleBase {
 
 	public void updateUserInfo(IClient client, RequestFunction function,
 			AMFDataList params) {
-		userManager.updateUserInfo(Integer.toString(client.getClientId()),
-				params.get(PARAM1));
+		userManager.updateUserInfo(client,Integer.toString(client.getClientId()),
+				params.getObject(PARAM1));
 	}
 
 	public void sendImage(IClient client, RequestFunction function,
