@@ -26,7 +26,7 @@ CREATE TABLE `room` (
   `id` int(11) NOT NULL auto_increment,
   `created_on` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=348 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=429 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -47,7 +47,7 @@ CREATE TABLE `session` (
   `total_bytes` int(11) default NULL,
   PRIMARY KEY  (`session_id`),
   KEY `session_room_id_idx` (`session_id`,`room_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1783 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=2924 DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -173,4 +173,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-08-26 17:02:29
+-- Dump completed on 2010-10-02  0:46:32
