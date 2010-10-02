@@ -90,7 +90,12 @@ public class Application extends ModuleBase {
 	
 	public void stopReportLoop()
 	{
-		reportLoopThread.interrupt();
+		try {
+			reportLoopThread.interrupt();
+		} catch (NullPointerException e) {
+			getLogger().info("Application.stopReportLoop() " + e.toString());
+		}
+		
 		try {
 			reportLoopThread.join();
 		} catch (InterruptedException e) {
