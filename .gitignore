@@ -1,10 +1,7 @@
 .classpath
 build.xml
-bin/*
+wowza/bin/*
 .project
 .externalToolBuilders
 /build.xml
-<<<<<<< HEAD
 jar/*
-=======
->>>>>>> 9712a0f473d16536abfa17c58ce7be77bb389837

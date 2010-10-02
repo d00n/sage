@@ -12,6 +12,7 @@ import com.wowza.wms.amf.AMFDataArray;
 import com.wowza.wms.amf.AMFDataList;
 import com.wowza.wms.amf.AMFDataMixedArray;
 import com.wowza.wms.amf.AMFDataObj;
+import com.wowza.wms.amf.AMFObj;
 import com.wowza.wms.client.IClient;
 import com.wowza.wms.sharedobject.ISharedObject;
 import com.wowza.wms.sharedobject.ISharedObjects;
@@ -157,11 +158,29 @@ public class UserManager
 		}
 	}
 	
-	public void updateUserInfo(String suid, AMFData user_obj)
+	public void updateUserInfo(IClient client,String suid, AMFDataObj data_obj)
 	{
+		AMFDataObj user_obj = data_obj.getObject("my_info");
+
 		users_obj.put(suid,user_obj);
-		main_app.app_instance.broadcastMsg("updateUsers", users_obj);
+
+		if(getClientInfo(suid).getBoolean("report_connection_status")){
+			//need to report flapping
+			
+			String application_name = client.getApplication().getName();
+			
+			String reported_at = null; //let the db fill this in for us
+			String room_id = data_obj.getString("room_id");
+			String room_name = data_obj.getString("room_name");
+
+			String server_mode = Boolean.toString(getClientInfo(suid).getBoolean("peer_connection_status"));
+			String user_id = data_obj.getString("user_id");
+			String user_name = getClientInfo(suid).getString("uname");
+			
+			main_app.databaseManager.saveSessionMemberFlap(application_name, room_name, room_id, user_name, user_id, reported_at, server_mode);
+		}
 		
+		main_app.app_instance.broadcastMsg("updateUsers", users_obj);
 		main_app.streamManager.checkStreamSupport();
 	}
 	
