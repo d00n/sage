@@ -24,6 +24,9 @@ public class UserManager
 	private static String SHARED_OBJECT_NAME = "whiteboard_contents";
 	
 	public AMFDataObj users_obj;
+	public String room_id;
+	public String room_name;
+	
 	private Application main_app;
 	
 	public UserManager(Application app) 
@@ -46,13 +49,11 @@ public class UserManager
 		
 		AMFDataObj curr_user_obj = (AMFDataObj) params.get(3);
 		String auth_key = params.getString(4);
-		String room_id = params.getString(5);
-		String room_name = params.getString(6);
-		String user_name = params.getString(7);
-		String user_id = params.getString(8);
-		String application_name = params.getString(9);
-		String application_version = params.getString(10);
-		String capabilities =  params.getString(11);
+		room_id = params.getString(5);
+		room_name = params.getString(6);
+		String application_name = params.getString(7);
+		String application_version = params.getString(8);
+		String capabilities =  params.getString(9);
 
 		if(!validateKey(auth_key)){
 			main_app.log("UserManager.userConnect() user key invalid");
@@ -90,8 +91,8 @@ public class UserManager
 			main_app.databaseManager.saveSessionStart(curr_user_obj);	
 			main_app.databaseManager.saveSessionMemberStart(room_id, 
 				room_name,
-				user_id, 
-				user_name, 
+				curr_user_obj.getString("user_id"), 
+				curr_user_obj.getString("user_name"), 
 				application_name,
 				application_version, 
 				client.getClientId(),
@@ -158,9 +159,9 @@ public class UserManager
 		}
 	}
 	
-	public void updateUserInfo(IClient client,String suid, AMFDataObj data_obj)
+	public void updateUserInfo(IClient client,String suid, AMFDataObj user_obj)
 	{
-		AMFDataObj user_obj = data_obj.getObject("my_info");
+//		AMFDataObj user_obj = data_obj.getObject("my_info");
 
 		users_obj.put(suid,user_obj);
 
@@ -169,15 +170,20 @@ public class UserManager
 			
 			String application_name = client.getApplication().getName();
 			
-			String reported_at = null; //let the db fill this in for us
-			String room_id = data_obj.getString("room_id");
-			String room_name = data_obj.getString("room_name");
-
 			String server_mode = Boolean.toString(getClientInfo(suid).getBoolean("peer_connection_status"));
-			String user_id = data_obj.getString("user_id");
-			String user_name = getClientInfo(suid).getString("uname");
+			String user_id = getClientInfo(suid).getString("user_id");
+			String user_name = getClientInfo(suid).getString("user_name");
 			
-			main_app.databaseManager.saveSessionMemberFlap(application_name, room_name, room_id, user_name, user_id, reported_at, server_mode);
+			try{
+				main_app.databaseManager.saveSessionMemberFlap(application_name, 
+						room_name, 
+						room_id, 
+						user_name, 
+						user_id, 
+						server_mode);
+			} catch (Exception e) {
+				main_app.error("DatabaseManager not online"+ e.getMessage());
+			}
 		}
 		
 		main_app.app_instance.broadcastMsg("updateUsers", users_obj);
@@ -229,7 +235,7 @@ public class UserManager
 /*
 
 User properties to expose:
-uname
+user_name
 suid (maybe use this for the stream)
 peer_enabled //is connected and supports peer connections
 nearID (used for stream)
