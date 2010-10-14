@@ -168,11 +168,10 @@ public class UserManager
 		if(getClientInfo(suid).getBoolean("report_connection_status")){
 			//need to report flapping
 			
-			String application_name = client.getApplication().getName();
-			
-			String server_mode = Boolean.toString(getClientInfo(suid).getBoolean("peer_connection_status"));
-			String user_id = getClientInfo(suid).getString("user_id");
-			String user_name = getClientInfo(suid).getString("user_name");
+			String application_name 		= client.getApplication().getName();			
+			String peer_connection_status 	= user_obj.getString("peer_connection_status");
+			String user_id 					= user_obj.getString("user_id");
+			String user_name 				= user_obj.getString("user_name");
 			
 			try{
 				main_app.databaseManager.saveSessionMemberFlap(application_name, 
@@ -180,7 +179,7 @@ public class UserManager
 						room_id, 
 						user_name, 
 						user_id, 
-						server_mode);
+						peer_connection_status);
 			} catch (Exception e) {
 				main_app.error("DatabaseManager not online"+ e.getMessage());
 			}

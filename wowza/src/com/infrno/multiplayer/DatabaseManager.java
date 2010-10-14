@@ -154,15 +154,15 @@ public class DatabaseManager {
 			+ "user_id "
 			+ ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-		String sessionFlapSql = "insert into session_flap_report"
+		String sessionFlapSql = "insert into session_flap"
 			+ "(session_id, " 
 			+ "application_name, " 
 			+ "room_name, "
 			+ "room_id, " 
 			+ "user_name, " 
-			+ "user_id "
-			+ "server_mode "
-			+ ") values (?,?,?,?,?,?,?,?)";
+			+ "user_id, "
+			+ "peer_connection_status "
+			+ ") values (?,?,?,?,?,?,?)";
 		
 		try {
 			_sessionMemberStart_ps = _conn.prepareStatement(sessionMemberStartSql);
@@ -495,7 +495,7 @@ public class DatabaseManager {
 			String room_id,
 			String user_name, 			
 			String user_id, 
-			String server_mode) {
+			String peer_connection_status) {
 		
 		try {
 			_sessionFlap_ps.clearParameters();
@@ -506,7 +506,7 @@ public class DatabaseManager {
 			_sessionFlap_ps.setString(4, room_id);
 			_sessionFlap_ps.setString(5, user_name);
 			_sessionFlap_ps.setString(6, user_id);
-			_sessionFlap_ps.setString(7, server_mode);
+			_sessionFlap_ps.setString(7, peer_connection_status);
 			_sessionFlap_ps.execute();
 		} catch(SQLException e){
 			main_app.error("saveSessionMemberFlap() sqlexecuteException: "
