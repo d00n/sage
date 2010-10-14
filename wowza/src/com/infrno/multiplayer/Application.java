@@ -43,16 +43,16 @@ public class Application extends ModuleBase {
 		String contextString = appInstance.getContextStr();
 		
 		String fullname = appInstance.getApplication().getName() + "/" + appInstance.getName();
-		getLogger().info("Application.onAppStart() Infrno v0.8.5 appName=" +appName+ ", contextString=" +contextString);
+		getLogger().info("Application.onAppStart() Infrno v0.8.6 appName=" +appName+ ", contextString=" +contextString);
 
 		m_logger.info( "starting application" );
 		
 		app_instance = appInstance;
 		chatManager = new ChatManager(this);
-		databaseManager = new DatabaseManager(this);
 		streamManager = new StreamManager(this);
 		userManager = new UserManager(this);
 		whiteboardManager = new WhiteboardManager(this);
+		databaseManager = new DatabaseManager(this);
 	}
 
 	public void onAppStop(IApplicationInstance appInstance) {

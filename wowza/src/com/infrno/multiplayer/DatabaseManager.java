@@ -161,7 +161,6 @@ public class DatabaseManager {
 			+ "room_id, " 
 			+ "user_name, " 
 			+ "user_id "
-			+ "reported_at "
 			+ "server_mode "
 			+ ") values (?,?,?,?,?,?,?,?)";
 		
@@ -244,7 +243,6 @@ public class DatabaseManager {
 				+ amfDataObj.getString("room_id") + " user_name="
 				+ amfDataObj.getString("user_name"));
 
-		String uname = amfDataObj.getString("uname");
 		String wowza_protocol = amfDataObj.getString("wowza_protocol");
 		int currentBytesPerSecond = amfDataObj.getInt("currentBytesPerSecond");
 		int dataBytesPerSecond = amfDataObj.getInt("dataBytesPerSecond");
@@ -497,7 +495,6 @@ public class DatabaseManager {
 			String room_id,
 			String user_name, 			
 			String user_id, 
-			String reported_at, 
 			String server_mode) {
 		
 		try {
@@ -509,8 +506,7 @@ public class DatabaseManager {
 			_sessionFlap_ps.setString(4, room_id);
 			_sessionFlap_ps.setString(5, user_name);
 			_sessionFlap_ps.setString(6, user_id);
-			_sessionFlap_ps.setString(7, reported_at);
-			_sessionFlap_ps.setString(8, server_mode);
+			_sessionFlap_ps.setString(7, server_mode);
 			_sessionFlap_ps.execute();
 		} catch(SQLException e){
 			main_app.error("saveSessionMemberFlap() sqlexecuteException: "

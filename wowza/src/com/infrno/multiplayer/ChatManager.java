@@ -23,19 +23,19 @@ public class ChatManager
 		String msgIn = msgObj.getString( 3 );
 		//4th param may one day contain targetd users to recieve the chat
 		
-		String uname = main_app.userManager.getClientInfo(Integer.toString(client.getClientId())).getString("uname");
+		String user_name = main_app.userManager.getClientInfo(Integer.toString(client.getClientId())).getString("user_name");
 		
 		MessageEvaluator messageEvaluator = new MessageEvaluator( msgIn );
 		ChatExpression chatExpression = messageEvaluator.getChatExpression( );
 		
 		Map <String, String> context = new HashMap<String, String>();
-		context.put("user_name", uname);
+		context.put("user_name", user_name);
 		String interpretedMessage = chatExpression.interpret( context );
 		
 		main_app.log( "ChatManager.chatToServer() chat from client came in: "+msgIn );
 		main_app.log( "ChagManager.chatToServer() interpreted cha=" + interpretedMessage );
 		
-		main_app.app_instance.broadcastMsg( "chatToUser", uname + ": " + interpretedMessage );
+		main_app.app_instance.broadcastMsg( "chatToUser", user_name + ": " + interpretedMessage );
 	}
 	
 }
