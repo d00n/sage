@@ -17,36 +17,40 @@ public class Application extends ModuleBase {
 	public UserManager userManager;
 	public WhiteboardManager whiteboardManager;
 	private Thread reportLoopThread;
-	
-	private static Logger m_logger = Logger.getLogger( Application.class ); 
-	
+
+	private static Logger m_logger = Logger.getLogger(Application.class);
+
 	private static class ReportLoop implements Runnable {
 		private static final int SECONDS_BETWEEN_REPORTS = 30;
 		public Application main_app;
-        public void run() {
-        	while (true) {
-        		try {
+
+		public void run() {
+			while (true) {
+				try {
 					Thread.sleep(SECONDS_BETWEEN_REPORTS * 1000);
-	        		main_app.app_instance.broadcastMsg("getUserStats");
+					main_app.app_instance.broadcastMsg("getUserStats");
 				} catch (InterruptedException e) {
 					main_app.log("ReportLoop.run() " + e.toString());
 					return;
 				}
-        	}
-        }
+			}
+		}
 	}
 
-	public void onAppStart(IApplicationInstance appInstance) {	
-		
-		String appPath = appInstance.getApplication().getApplicationPath();
-		String appName = appInstance.getApplication().getName();		
-		String contextString = appInstance.getContextStr();
-		
-		String fullname = appInstance.getApplication().getName() + "/" + appInstance.getName();
-		getLogger().info("Application.onAppStart() Infrno v0.8.6 appName=" +appName+ ", contextString=" +contextString);
+	public void onAppStart(IApplicationInstance appInstance) {
 
-		m_logger.info( "starting application" );
-		
+		String appPath = appInstance.getApplication().getApplicationPath();
+		String appName = appInstance.getApplication().getName();
+		String contextString = appInstance.getContextStr();
+
+		String fullname = appInstance.getApplication().getName() + "/"
+				+ appInstance.getName();
+		getLogger().info(
+				"Application.onAppStart() Infrno v0.8.6 appName=" + appName
+						+ ", contextString=" + contextString);
+
+		m_logger.info("starting application");
+
 		app_instance = appInstance;
 		chatManager = new ChatManager(this);
 		streamManager = new StreamManager(this);
@@ -59,43 +63,40 @@ public class Application extends ModuleBase {
 		String fullname = appInstance.getApplication().getName() + "/"
 				+ appInstance.getName();
 		getLogger().info("Application.onAppStop() " + fullname);
-		
+
 		stopReportLoop();
-		
+
 		try {
-			databaseManager.saveSessionEndReport();		
+			databaseManager.saveSessionEndReport();
 			databaseManager.close();
 		} catch (Exception e) {
-			error("DatabaseManager not online"+ e.getMessage());
+			error("DatabaseManager not online" + e.getMessage());
 		}
 		databaseManager = null;
-				
+
 		chatManager = null;
 		streamManager = null;
 		userManager = null;
 		whiteboardManager = null;
 		app_instance = null;
 	}
-	
-	public void startReportLoop() 
-	{
-		if (reportLoopThread == null)
-		{
+
+	public void startReportLoop() {
+		if (reportLoopThread == null) {
 			ReportLoop reportLoop = new ReportLoop();
 			reportLoop.main_app = this;
 			reportLoopThread = new Thread(reportLoop);
 			reportLoopThread.start();
 		}
 	}
-	
-	public void stopReportLoop()
-	{
+
+	public void stopReportLoop() {
 		try {
 			reportLoopThread.interrupt();
 		} catch (NullPointerException e) {
 			getLogger().info("Application.stopReportLoop() " + e.toString());
 		}
-		
+
 		try {
 			reportLoopThread.join();
 		} catch (InterruptedException e) {
@@ -105,13 +106,12 @@ public class Application extends ModuleBase {
 
 	public void onConnect(IClient client, RequestFunction function,
 			AMFDataList params) {
-		m_logger.info( "onConnect" );			
-		
+		m_logger.info("onConnect");
+
 		String appName = app_instance.getApplication().getName();
-		log("Application.onConnect() appName=" +appName);
-						
-		if (userManager.userConnect(client, params))
-		{
+		log("Application.onConnect() appName=" + appName);
+
+		if (userManager.userConnect(client, params)) {
 			startReportLoop();
 		}
 	}
@@ -147,11 +147,16 @@ public class Application extends ModuleBase {
 			AMFDataList params) {
 		userManager.reportUserStats(client, params);
 	}
+	
+	public void reportPeerConnectionStatus(IClient client, RequestFunction function,
+			AMFDataList params) {
+		userManager.reportPeerConnectionStatus(client, params);
+	}
 
 	public void updateUserInfo(IClient client, RequestFunction function,
 			AMFDataList params) {
-		userManager.updateUserInfo(client,Integer.toString(client.getClientId()),
-				params.getObject(PARAM1));
+		userManager.updateUserInfo(client, Integer.toString(client
+				.getClientId()), params.getObject(PARAM1));
 	}
 
 	public void sendImage(IClient client, RequestFunction function,
