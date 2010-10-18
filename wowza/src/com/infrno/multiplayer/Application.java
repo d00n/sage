@@ -153,26 +153,22 @@ public class Application extends ModuleBase {
 		userManager.reportPeerConnectionStatus(client, params);
 	}
 
-	public void updateUserInfo(IClient client, RequestFunction function,
-			AMFDataList params) {
+	public void updateUserInfo(IClient client, RequestFunction function, AMFDataList params) {
 		userManager.updateUserInfo(client, Integer.toString(client
 				.getClientId()), params.getObject(PARAM1));
 	}
 
-	public void sendImage(IClient client, RequestFunction function,
-			AMFDataList params) {
+	public void sendImage(IClient client, RequestFunction function, AMFDataList params) {
 		whiteboardManager.sendImage(client, function, params);
 	}
 
-	public void returnImageURL(IClient client, AMFDataList params,
-			String imageURL, String sdID) {
+	public void returnImageURL(IClient client, AMFDataList params, String imageURL, String sdID) {
 
 		AMFDataObj returnObj = new AMFDataObj();
 		returnObj.put("imageURL", imageURL);
 		returnObj.put("sdID", sdID);
 
 		sendResult(client, params, returnObj);
-
 	}
 
 }

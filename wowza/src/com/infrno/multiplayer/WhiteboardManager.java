@@ -26,12 +26,8 @@ class CallResult extends ModuleBase implements IModuleCallResult {
 public class WhiteboardManager 
 {
 	private Application main_app;
-	
-//	private static String IMAGE_CACHE_DIR = "C:/Program Files/Apache Software Foundation/Apache2.2/htdocs/";
-//	private static String IMAGE_HOST = "http://localhost";
-	
-	private static String IMAGE_HOST = "http://admin.infrno.net/";
-	private static String IMAGE_CACHE_DIR = "images/";
+
+	private static String IMAGE_CACHE_DIR = "/images/";
 	private static String DOC_ROOT = "/var/www/html/";
 	
 	public WhiteboardManager(Application app) 
@@ -45,33 +41,11 @@ public class WhiteboardManager
 	
 	public void sendImage(IClient client, RequestFunction function,	AMFDataList params) {
 		main_app.log("WhiteboardManager.sendImage()");
-		
-		//byte[] bArray = getParam(params, PARAM1).serialize();
-		
 
 		AMFDataByteArray image_amfba 	= (AMFDataByteArray) params.get(3);
 		String imageName 				= params.getString(4);
 		String sdID		 				= params.getString(5);
-//		AMFDataItem x_amfdi 			= new AMFDataItem(params.getString(3));
-//		AMFDataItem y_amfdi 			= new AMFDataItem(params.getString(4));
-//		AMFDataItem width_amfdi 		= new AMFDataItem(params.getString(5));
-//		AMFDataItem height_amfdi 		= new AMFDataItem(params.getString(6));
-//		AMFDataItem zIndex_amfdi 		= new AMFDataItem(params.getString(7));
-//		AMFDataItem origHeight_amfdi 	= new AMFDataItem(params.getString(8));
-//		AMFDataItem origWidth_amfdi 	= new AMFDataItem(params.getString(9));
-//		AMFDataItem styleName_amfdi 	= new AMFDataItem(params.getString(10));
-//		
-//		AMFDataObj returnObj = new AMFDataObj();		
-//		returnObj.put("image", image_amfba);
-//		returnObj.put("sdID", sdID_amfdi);
-//		returnObj.put("x", x_amfdi);
-//		returnObj.put("y", y_amfdi);
-//		returnObj.put("width", width_amfdi);
-//		returnObj.put("height", height_amfdi);
-//		returnObj.put("zIndex", zIndex_amfdi);
-//		returnObj.put("origHeight", origHeight_amfdi);
-//		returnObj.put("origWidth", origWidth_amfdi);
-//		returnObj.put("styleName", styleName_amfdi);
+		String imageServer				= params.getString(6);
 
 		String hash = new String();
 		try {
@@ -81,15 +55,12 @@ public class WhiteboardManager
 			e.printStackTrace();
 		}
 		
-		String hashPath = convertHashToPath(hash);
-		
-		String fullPath = DOC_ROOT + IMAGE_CACHE_DIR + hashPath;
-		
+		String hashPath = convertHashToPath(hash);		
+		String fullPath = DOC_ROOT + IMAGE_CACHE_DIR + hashPath;		
 		File fullPathDirs = new File(fullPath);
 		fullPathDirs.mkdirs();
 		
-		main_app.log("WhiteboardManager.sendImage() about to save: " + fullPathDirs + imageName);
-		
+		main_app.log("WhiteboardManager.sendImage() about to save: " + fullPathDirs +"/"+ imageName);		
 		try {
 			FileOutputStream fos = new FileOutputStream(fullPath + imageName);
 			fos.write(image_amfba.toArray());
@@ -100,22 +71,8 @@ public class WhiteboardManager
 			System.out.println("IOException : " + ioe);
 		}
 		
-
-		String imageURL = IMAGE_HOST + IMAGE_CACHE_DIR + hashPath + imageName;
+		String imageURL = imageServer + IMAGE_CACHE_DIR + hashPath + imageName;
 		main_app.returnImageURL(client, params, imageURL, sdID);
-		
-		String appInstanceName = main_app.app_instance.getName();
-		
-//		main_app.databaseManager.saveImage();
-//
-//		Client jpg_client;
-//		Iterator i = clientList.iterator();
-//		while (i.hasNext()) {
-//			jpg_client = (Client) i.next();
-//			if (jpg_client != client)
-//				myFunction(jpg_client, function, returnObj);
-//
-//		}
 	}
 	
 	private static final String convertHashToPath(String hash) {
