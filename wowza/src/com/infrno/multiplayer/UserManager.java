@@ -133,56 +133,56 @@ public class UserManager {
 		main_app.app_instance.broadcastMsg("updateUsers", users_obj);
 	}
 	
-	public void updateUserInfo(IClient client, String suid, AMFDataObj user_obj) {
-		// AMFDataObj user_obj = data_obj.getObject("userInfoVO");
-		users_obj.put(suid, user_obj);
+	public void reportUserStats(IClient client, AMFDataList params)
+	{
+		main_app.log("client getLastValidateTime "+client.getLastValidateTime());
+
+		AMFDataObj amfDataObj = (AMFDataObj) params.get(3);		
+
+		try {
+			main_app.databaseManager.saveSessionReport(amfDataObj,
+				client.getLastValidateTime(),
+				client.getPingRoundTripTime(),
+				(long) client.getMediaIOPerformanceCounter().getFileInBytesRate(),
+				(long) client.getMediaIOPerformanceCounter().getFileOutBytesRate(),
+				(long) client.getMediaIOPerformanceCounter().getMessagesInBytesRate(),
+				client.getMediaIOPerformanceCounter().getMessagesInCountRate(),
+				(long) client.getMediaIOPerformanceCounter().getMessagesLossBytesRate(),
+				client.getMediaIOPerformanceCounter().getMessagesLossCountRate(),
+				(long) client.getMediaIOPerformanceCounter().getMessagesOutBytesRate(),
+				client.getMediaIOPerformanceCounter().getMessagesOutCountRate());
+		} catch (Exception e) {
+			main_app.error("DatabaseManager not online"+ e.getMessage());
+		}
+	}
+	
+	public void updateUserInfo(IClient client,String suid, AMFDataObj user_obj)
+	{
+		users_obj.put(suid,user_obj);
+
+		if(getClientInfo(suid).getBoolean("report_connection_status")){
+			//need to report flapping
+
+			String application_name 		= client.getApplication().getName();			
+			String peer_connection_status 	= user_obj.getString("peer_connection_status");
+			String user_id 					= user_obj.getString("user_id");
+			String user_name 				= user_obj.getString("user_name");
+
+			try{
+				main_app.databaseManager.saveSessionMemberFlap(application_name, 
+						room_name, 
+						room_id, 
+						user_name, 
+						user_id, 
+						peer_connection_status);
+			} catch (Exception e) {
+				main_app.error("updateUserInfo() DatabaseManager not online"+ e.getMessage());
+			}
+		}
 
 		main_app.app_instance.broadcastMsg("updateUsers", users_obj);
 		main_app.streamManager.checkStreamSupport();
 	}
-
-	public void reportUserStats(IClient client, AMFDataList params) {
-		AMFDataObj amfDataObj = (AMFDataObj) params.get(3);
-
-		try {
-			main_app.databaseManager.saveSessionReport(
-				amfDataObj, 
-				client.getLastValidateTime(), 
-				client.getPingRoundTripTime(),
-				(long) client.getMediaIOPerformanceCounter().getFileInBytesRate(), 
-				(long) client.getMediaIOPerformanceCounter().getFileOutBytesRate(), 
-				(long) client.getMediaIOPerformanceCounter().getMessagesInBytesRate(), 
-				client.getMediaIOPerformanceCounter().getMessagesInCountRate(), 
-				(long) client.getMediaIOPerformanceCounter().getMessagesLossBytesRate(), 
-				client.getMediaIOPerformanceCounter().getMessagesLossCountRate(), 
-				(long) client.getMediaIOPerformanceCounter().getMessagesOutBytesRate(), 
-				client.getMediaIOPerformanceCounter().getMessagesOutCountRate());
-		} catch (Exception e) {
-			main_app.error("reportUserStats() DatabaseManager not online" + e.getMessage());
-		}
-	}
-
-	public void reportPeerConnectionStatus(IClient client, AMFDataList params) {		
-		AMFDataObj amfDataObj = (AMFDataObj) params.get(3);
-		
-		String application_name 		= client.getApplication().getName();
-		String peer_connection_status 	= amfDataObj.getString("peer_connection_status");
-		String user_id 					= amfDataObj.getString("user_id");
-		String user_name 				= amfDataObj.getString("user_name");
-
-		try {
-			main_app.databaseManager.saveSessionMemberFlap(
-				application_name, 
-				room_name, 
-				room_id, 
-				user_name,
-				user_id, 
-				peer_connection_status);
-		} catch (Exception e) {
-			main_app.error("updateUserInfo() DatabaseManager not online"+e.getMessage());
-		}
-
-	}	
 	
 	public AMFDataObj getClientInfo(String suid) {
 		return (AMFDataObj) users_obj.get(suid);

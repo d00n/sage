@@ -104,8 +104,7 @@ public class Application extends ModuleBase {
 		}
 	}
 
-	public void onConnect(IClient client, RequestFunction function,
-			AMFDataList params) {
+	public void onConnect(IClient client, RequestFunction function,	AMFDataList params) {
 		m_logger.info("onConnect");
 
 		String appName = app_instance.getApplication().getName();
@@ -133,29 +132,20 @@ public class Application extends ModuleBase {
 	 * Client Methods
 	 */
 
-	public void chatToServer(IClient client, RequestFunction function,
-			AMFDataList params) {
+	public void chatToServer(IClient client, RequestFunction function,AMFDataList params) {
 		chatManager.chatToServer(client, params);
 	}
 
-	public void getUserStats(IClient client, RequestFunction function,
-			AMFDataList params) {
+	public void getUserStats(IClient client, RequestFunction function,AMFDataList params) {
 		userManager.getUserStats();
 	}
 
-	public void reportUserStats(IClient client, RequestFunction function,
-			AMFDataList params) {
+	public void reportUserStats(IClient client, RequestFunction function,AMFDataList params) {
 		userManager.reportUserStats(client, params);
-	}
-	
-	public void reportPeerConnectionStatus(IClient client, RequestFunction function,
-			AMFDataList params) {
-		userManager.reportPeerConnectionStatus(client, params);
-	}
+	}	
 
 	public void updateUserInfo(IClient client, RequestFunction function, AMFDataList params) {
-		userManager.updateUserInfo(client, Integer.toString(client
-				.getClientId()), params.getObject(PARAM1));
+		userManager.updateUserInfo(client, Integer.toString(client.getClientId()), params.getObject(PARAM1));
 	}
 
 	public void sendImage(IClient client, RequestFunction function, AMFDataList params) {

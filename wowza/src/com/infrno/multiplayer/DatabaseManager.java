@@ -2,7 +2,6 @@ package com.infrno.multiplayer;
 
 import java.sql.*;
 
-import com.mysql.jdbc.Driver;
 import com.wowza.wms.amf.AMFDataObj;
 
 import com.infrno.multiplayer.Application;
@@ -496,6 +495,13 @@ public class DatabaseManager {
 			String user_name, 			
 			String user_id, 
 			String peer_connection_status) {
+		
+		main_app.log("saveSessionMemberFlap() appName="
+				+ main_app.app_instance.getApplication().getName()
+				+ " room_id=" + room_id
+				+ " room_name=" + room_name
+				+ " user_name=" + user_name
+				+ " peer_connection_status=" +peer_connection_status);
 		
 		try {
 			_sessionFlap_ps.clearParameters();
