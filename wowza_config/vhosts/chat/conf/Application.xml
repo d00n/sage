@@ -24,7 +24,7 @@
       
     -->
     <Streams>
-      <StreamType>default</StreamType>
+      <StreamType>live-lowlatency</StreamType>
       <StorageDir>${com.wowza.wms.context.VHostConfigHome}/content</StorageDir>
       <KeyDir>${com.wowza.wms.context.VHostConfigHome}/keys</KeyDir>
       <!-- LiveStreamPacketizers (separate with commas): cupertinostreamingpacketizer, smoothstreamingpacketizer, cupertinostreamingrepeater, smoothstreamingrepeater -->
