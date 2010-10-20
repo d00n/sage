@@ -9,7 +9,7 @@
     <MaximumStorageDirDepth>25</MaximumStorageDirDepth>
     -->
     <Connections>
-      <AutoAccept>true</AutoAccept>
+      <AutoAccept>false</AutoAccept>
       <AllowDomains></AllowDomains>
     </Connections>
     <!--
@@ -121,8 +121,8 @@
       </Module>
       
       <Module>
-        <Name>whiteboard</Name>
-        <Description>whiteboard</Description>
+        <Name>chat</Name>
+        <Description>chat</Description>
         <Class>com.infrno.multiplayer.Application</Class>
       </Module> 
 
