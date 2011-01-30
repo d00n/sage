@@ -216,8 +216,7 @@ public class DatabaseManager {
 			}
 		} catch (SQLException e) {
 			main_app
-					.error("saveSessionStartReport(): getGeneratedKeys() or next() failed: "
-							+ e.toString());
+					.error("saveSessionStartReport(): getGeneratedKeys() or next() failed: "+ e.toString());
 		}
 
 		return true;
@@ -296,8 +295,7 @@ public class DatabaseManager {
 			
 			_sessionReport_ps.execute();
 		} catch (SQLException e) {
-			main_app.error("saveSessionReport() sqlexecuteException: "
-					+ e.toString());
+			main_app.error("saveSessionReport() sqlexecuteException: "+ e.toString());
 		}
 
 		return true;
@@ -346,99 +344,101 @@ public class DatabaseManager {
 		String pixelAspectRatio = "";
 		
 		String[] token;
-		String[] capability_array = capabilities.split("&");
-		for (int i = 0; i < capability_array.length; i++) {
-			token = capability_array[i].split("=");
-			
-			if (token[0].toUpperCase().equals("AVD"))
-				av_hardware_disable = token[1];
-
-			if (token[0].toUpperCase().equals("LFD"))
-				localFileReadDisable = token[1];
-
-			if (token[0].toUpperCase().equals("WD"))
-				windowless = token[1];
-
-			if (token[0].toUpperCase().equals("A"))
-				hasAudio = token[1];
-
-			if (token[0].toUpperCase().equals("SA"))
-				hasStreamingAudio = token[1];
-
-			if (token[0].toUpperCase().equals("SV"))
-				hasStreamingVideo = token[1];
-
-			if (token[0].toUpperCase().equals("EV"))
-				hasEmbeddedVideo = token[1];
-
-			if (token[0].toUpperCase().equals("MP3"))
-				hasMP3 = token[1];
-
-			if (token[0].toUpperCase().equals("TLS"))
-				hasMP3 = token[1];
-
-			if (token[0].toUpperCase().equals("AE"))
-				hasAudioEncoder = token[1];
-
-			if (token[0].toUpperCase().equals("VE"))
-				hasVideoEncoder = token[1];
-
-			if (token[0].toUpperCase().equals("ACC"))
-				hasAccessibility = token[1];
-
-			if (token[0].toUpperCase().equals("PR"))
-				hasPrinting = token[1];
-
-			if (token[0].toUpperCase().equals("SP"))
-				hasScreenPlayback = token[1];
-
-			if (token[0].toUpperCase().equals("DEB"))
-				isDebugger = token[1];
-
-			if (token[0].toUpperCase().equals("IME"))
-				hasIME = token[1];
-
-			if (token[0].toUpperCase().equals("PR32"))
-				p32bit_support = token[1];
-
-			if (token[0].toUpperCase().equals("PR64"))
-				p64bit_support = token[1];
-
-			if (token[0].toUpperCase().equals("V"))
-				version = token[1].replaceAll("%20", " ").replaceAll("%2C", ".");
-
-			if (token[0].toUpperCase().equals("M"))
-				manufacturer = token[1].replaceAll("%20", " ").replaceAll("%2C", ".");
-
-			if (token[0].toUpperCase().equals("R"))
-				screenResolution = token[1];
-
-			if (token[0].toUpperCase().equals("DP"))
-				screenDPI = token[1];
-
-			if (token[0].toUpperCase().equals("COL"))
-				screenColor = token[1];
-
-			if (token[0].toUpperCase().equals("OS"))
-				os = token[1].replaceAll("%20", " ").replaceAll("%2C", ".");
-
-			if (token[0].toUpperCase().equals("ARCH"))
-				arch = token[1];
-
-			if (token[0].toUpperCase().equals("L"))
-				language = token[1];
-
-			if (token[0].toUpperCase().equals("PT"))
-				playerType = token[1];
-
-			if (token[0].toUpperCase().equals("ML"))
-				maxLevelIDC = token[1];
-
-			if (token[0].toUpperCase().equals("SB"))
-				hasScreenBroadcast = token[1];
-
-			if (token[0].toUpperCase().equals("AR"))
-				pixelAspectRatio = token[1];
+		if (capabilities != null) {
+			String[] capability_array = capabilities.split("&");
+			for (int i = 0; i < capability_array.length; i++) {
+				token = capability_array[i].split("=");
+				
+				if (token[0].toUpperCase().equals("AVD"))
+					av_hardware_disable = token[1];
+	
+				if (token[0].toUpperCase().equals("LFD"))
+					localFileReadDisable = token[1];
+	
+				if (token[0].toUpperCase().equals("WD"))
+					windowless = token[1];
+	
+				if (token[0].toUpperCase().equals("A"))
+					hasAudio = token[1];
+	
+				if (token[0].toUpperCase().equals("SA"))
+					hasStreamingAudio = token[1];
+	
+				if (token[0].toUpperCase().equals("SV"))
+					hasStreamingVideo = token[1];
+	
+				if (token[0].toUpperCase().equals("EV"))
+					hasEmbeddedVideo = token[1];
+	
+				if (token[0].toUpperCase().equals("MP3"))
+					hasMP3 = token[1];
+	
+				if (token[0].toUpperCase().equals("TLS"))
+					hasMP3 = token[1];
+	
+				if (token[0].toUpperCase().equals("AE"))
+					hasAudioEncoder = token[1];
+	
+				if (token[0].toUpperCase().equals("VE"))
+					hasVideoEncoder = token[1];
+	
+				if (token[0].toUpperCase().equals("ACC"))
+					hasAccessibility = token[1];
+	
+				if (token[0].toUpperCase().equals("PR"))
+					hasPrinting = token[1];
+	
+				if (token[0].toUpperCase().equals("SP"))
+					hasScreenPlayback = token[1];
+	
+				if (token[0].toUpperCase().equals("DEB"))
+					isDebugger = token[1];
+	
+				if (token[0].toUpperCase().equals("IME"))
+					hasIME = token[1];
+	
+				if (token[0].toUpperCase().equals("PR32"))
+					p32bit_support = token[1];
+	
+				if (token[0].toUpperCase().equals("PR64"))
+					p64bit_support = token[1];
+	
+				if (token[0].toUpperCase().equals("V"))
+					version = token[1].replaceAll("%20", " ").replaceAll("%2C", ".");
+	
+				if (token[0].toUpperCase().equals("M"))
+					manufacturer = token[1].replaceAll("%20", " ").replaceAll("%2C", ".");
+	
+				if (token[0].toUpperCase().equals("R"))
+					screenResolution = token[1];
+	
+				if (token[0].toUpperCase().equals("DP"))
+					screenDPI = token[1];
+	
+				if (token[0].toUpperCase().equals("COL"))
+					screenColor = token[1];
+	
+				if (token[0].toUpperCase().equals("OS"))
+					os = token[1].replaceAll("%20", " ").replaceAll("%2C", ".");
+	
+				if (token[0].toUpperCase().equals("ARCH"))
+					arch = token[1];
+	
+				if (token[0].toUpperCase().equals("L"))
+					language = token[1];
+	
+				if (token[0].toUpperCase().equals("PT"))
+					playerType = token[1];
+	
+				if (token[0].toUpperCase().equals("ML"))
+					maxLevelIDC = token[1];
+	
+				if (token[0].toUpperCase().equals("SB"))
+					hasScreenBroadcast = token[1];
+	
+				if (token[0].toUpperCase().equals("AR"))
+					pixelAspectRatio = token[1];
+			}
 		}
 
 		try {

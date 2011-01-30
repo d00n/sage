@@ -51,8 +51,7 @@ public class WhiteboardManager
 		try {
 			hash = computeSum(imageName + Math.random() );
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			main_app.error("sendImage() NoSuchAlgorithmException:"+e); 
 		}
 		
 		String hashPath = convertHashToPath(hash);		
@@ -66,9 +65,9 @@ public class WhiteboardManager
 			fos.write(image_amfba.toArray());
 			fos.close();
 		} catch (FileNotFoundException ex) {
-			System.out.println("FileNotFoundException : " + ex);
+			main_app.error("sendImage() FileNotFoundException:"+ex); 
 		} catch (IOException ioe) {
-			System.out.println("IOException : " + ioe);
+			main_app.error("sendImage() IOException:"+ioe); 
 		}
 		
 		String imageURL = imageServer + IMAGE_CACHE_DIR + hashPath + imageName;

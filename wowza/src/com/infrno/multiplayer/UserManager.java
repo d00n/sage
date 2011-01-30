@@ -99,7 +99,7 @@ public class UserManager {
 					client.getIp(), 
 					capabilities);
 		} catch (Exception e) {
-			main_app.error("userConnect() DatabaseManager not online"+ e.getMessage());
+			main_app.error("UserManager.userConnect() DatabaseManager not online"+ e.getMessage());
 		}
 
 		return true;
@@ -111,7 +111,7 @@ public class UserManager {
 		try {
 			main_app.databaseManager.saveSessionMemberEnd(client.getClientId());
 		} catch (Exception e) {
-			main_app.error("userDisconnect() DatabaseManager not online"+ e.getMessage());
+			main_app.error("UserManager.userDisconnect() DatabaseManager not online"+ e.getMessage());
 		}
 
 		// ISharedObjects sharedObjects =
@@ -135,7 +135,7 @@ public class UserManager {
 	
 	public void reportUserStats(IClient client, AMFDataList params)
 	{
-		main_app.log("client getLastValidateTime "+client.getLastValidateTime());
+		main_app.log("UserManager.reportUserStats() client.getLastValidateTime="+client.getLastValidateTime());
 
 		AMFDataObj amfDataObj = (AMFDataObj) params.get(3);		
 
@@ -152,13 +152,15 @@ public class UserManager {
 				(long) client.getMediaIOPerformanceCounter().getMessagesOutBytesRate(),
 				client.getMediaIOPerformanceCounter().getMessagesOutCountRate());
 		} catch (Exception e) {
-			main_app.error("DatabaseManager not online"+ e.getMessage());
+			main_app.error("UserManager.DatabaseManager not online"+ e.getMessage());
 		}
 	}
 	
-	public void updateUserInfo(IClient client,String suid, AMFDataObj user_obj)
+	public void updateUserInfo(IClient client, String suid, AMFDataObj user_obj)
 	{
-		users_obj.put(suid,user_obj);
+		main_app.log("UserManager.updateUserInfo() clientId="+client.getClientId()+", suid="+suid);
+		
+		users_obj.put(suid, user_obj);
 
 		if(getClientInfo(suid).getBoolean("report_connection_status")){
 			//need to report flapping
@@ -176,7 +178,7 @@ public class UserManager {
 						user_id, 
 						peer_connection_status);
 			} catch (Exception e) {
-				main_app.error("updateUserInfo() DatabaseManager not online"+ e.getMessage());
+				main_app.error("UserManager.updateUserInfo() DatabaseManager not online"+ e.getMessage());
 			}
 		}
 

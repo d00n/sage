@@ -10,6 +10,7 @@ import com.wowza.wms.module.ModuleBase;
 import com.wowza.wms.request.RequestFunction;
 
 public class Application extends ModuleBase {
+  private static String VERSION = "v0.8.1";
 	public IApplicationInstance app_instance;
 	public ChatManager chatManager;
 	public DatabaseManager databaseManager;
@@ -43,11 +44,8 @@ public class Application extends ModuleBase {
 		String appName = appInstance.getApplication().getName();
 		String contextString = appInstance.getContextStr();
 
-		String fullname = appInstance.getApplication().getName() + "/"
-				+ appInstance.getName();
-		getLogger().info(
-				"Application.onAppStart() Infrno v0.8.6 appName=" + appName
-						+ ", contextString=" + contextString);
+		String fullname = appInstance.getApplication().getName() +"/"+ appInstance.getName();
+		getLogger().info("Application.onAppStart() "+VERSION+", appName="+appName+", contextString="+contextString);
 
 		m_logger.info("starting application");
 
@@ -60,8 +58,7 @@ public class Application extends ModuleBase {
 	}
 
 	public void onAppStop(IApplicationInstance appInstance) {
-		String fullname = appInstance.getApplication().getName() + "/"
-				+ appInstance.getName();
+		String fullname = appInstance.getApplication().getName()+"/"+ appInstance.getName();
 		getLogger().info("Application.onAppStop() " + fullname);
 
 		stopReportLoop();
@@ -70,7 +67,7 @@ public class Application extends ModuleBase {
 			databaseManager.saveSessionEndReport();
 			databaseManager.close();
 		} catch (Exception e) {
-			error("DatabaseManager not online" + e.getMessage());
+			error("Application.onAppStop DatabaseManager not online" + e.getMessage());
 		}
 		databaseManager = null;
 
@@ -132,27 +129,28 @@ public class Application extends ModuleBase {
 	 * Client Methods
 	 */
 
-	public void chatToServer(IClient client, RequestFunction function,AMFDataList params) {
+	public void chatToServer(IClient client, RequestFunction function, AMFDataList params) {
 		chatManager.chatToServer(client, params);
 	}
 
-	public void getUserStats(IClient client, RequestFunction function,AMFDataList params) {
+	public void getUserStats(IClient client, RequestFunction function, AMFDataList params) {
 		userManager.getUserStats();
 	}
 
-	public void reportUserStats(IClient client, RequestFunction function,AMFDataList params) {
+	public void reportUserStats(IClient client, RequestFunction function, AMFDataList params) {
 		userManager.reportUserStats(client, params);
-	}	
+	}
 
 	public void updateUserInfo(IClient client, RequestFunction function, AMFDataList params) {
 		userManager.updateUserInfo(client, Integer.toString(client.getClientId()), params.getObject(PARAM1));
 	}
 
-	public void sendImage(IClient client, RequestFunction function, AMFDataList params) {
+	public void sendImage(IClient client, RequestFunction function,	AMFDataList params) {
 		whiteboardManager.sendImage(client, function, params);
 	}
 
 	public void returnImageURL(IClient client, AMFDataList params, String imageURL, String sdID) {
+		getLogger().info("Application.returnImageURL() sdID=" + sdID + ", imageURL="+ imageURL);
 
 		AMFDataObj returnObj = new AMFDataObj();
 		returnObj.put("imageURL", imageURL);

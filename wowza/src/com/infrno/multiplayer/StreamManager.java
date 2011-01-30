@@ -22,12 +22,9 @@ public class StreamManager
 			main_app.log("StreamManager.checkStreamSupport() " +curr_user_info.getString("peer_connection_status"));
 			
 			if(!curr_user_info.getString("peer_connection_status").equals("peer_netconnection_connected"))
-				use_peer_connection=false;
-			
+				use_peer_connection=false;			
 		}
 		
-		main_app.app_instance.broadcastMsg("usePeerConnection", use_peer_connection);
-		
-	}
-	
+		main_app.app_instance.broadcastMsg("usePeerConnection", use_peer_connection);		
+	}	
 }
