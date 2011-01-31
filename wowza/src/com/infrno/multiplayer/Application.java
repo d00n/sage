@@ -87,10 +87,6 @@ public class Application extends ModuleBase {
     }
   }
 
-  public void foo() {
-
-  }
-
   public void stopReportLoop() {
     try {
       reportLoopThread.interrupt();

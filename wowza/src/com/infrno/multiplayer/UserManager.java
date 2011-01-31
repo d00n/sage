@@ -87,8 +87,7 @@ public class UserManager {
 
     try {
       main_app.databaseManager.saveSessionStart(curr_user_obj);
-      main_app.databaseManager.saveSessionMemberStart(
-          room_id, 
+      main_app.databaseManager.saveSessionMemberStart(room_id, 
           room_name,
           curr_user_obj.getString("user_id"), 
           curr_user_obj.getString("user_name"), 
