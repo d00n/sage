@@ -1,7 +1,6 @@
 #!/bin/bash
 
 
-echo "Last 24 hours"
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < gameTableStats_hours_played.sql 
 echo
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < gameTableStats_unique_users.sql
