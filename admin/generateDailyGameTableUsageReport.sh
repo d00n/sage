@@ -10,6 +10,9 @@ echo
 echo
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < gameTableStats_hours_by_user.sql
 echo
-echo "Power users"
-/usr/bin/mysql sage -u sage_rw -psk00bysnack99 < gameTableStats_power_users.sql
+echo "Top users by hours played"
+/usr/bin/mysql sage -u sage_rw -psk00bysnack99 < gameTableStats_top_users_by_hours_played.sql
+echo
+echo "Top games by hours played"
+/usr/bin/mysql sage -u sage_rw -psk00bysnack99 < gameTableStats_top_games_by_hours_played.sql
 
