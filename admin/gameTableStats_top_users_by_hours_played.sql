@@ -1,5 +1,5 @@
 select sum(round(timestampdiff(second, connected_at, disconnected_at)/60/60,2 )) as 'Hours',
-       user_name as 'Top users'
+       user_name as 'Player'
   from session_member 
  where disconnected_at !=0 and
        application_name = 'chat' and
