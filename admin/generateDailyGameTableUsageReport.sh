@@ -2,15 +2,18 @@
 
 ADMIN_DIR=/home/muldoon/repos/sage/admin
 
+hostname
+echo
+
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_hours_played.sql 
 echo
 echo 'Games in progress'
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_games_in_progress.sql
 echo
-/usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_unique_users.sql
-echo
 echo 'Zombie connections'
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_zombie_connections.sql
+echo
+/usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_unique_users.sql
 echo
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_hours_by_game.sql
 echo
