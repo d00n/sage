@@ -30,6 +30,7 @@ public class Application extends ModuleBase {
         try {
           Thread.sleep(SECONDS_BETWEEN_REPORTS * 1000);
           main_app.app_instance.broadcastMsg("getUserStats");
+          main_app.app_instance.broadcastMsg("generatePeerStats");          
         } catch (InterruptedException e) {
           main_app.log("ReportLoop.run() " + e.toString());
           return;
@@ -61,7 +62,7 @@ public class Application extends ModuleBase {
     String fullname = appInstance.getApplication().getName()+"/"+ appInstance.getName();
     getLogger().info("Application.onAppStop() " + fullname);
 
-    stopReportLoop();
+//    stopReportLoop();
 
     try {
       databaseManager.saveSessionEndReport();
@@ -108,7 +109,7 @@ public class Application extends ModuleBase {
     log("Application.onConnect() appName=" + appName);
 
     if (userManager.userConnect(client, params)) {
-      startReportLoop();
+//      startReportLoop();
     }
   }
 
@@ -133,12 +134,17 @@ public class Application extends ModuleBase {
     chatManager.chatToServer(client, params);
   }
 
-  public void getUserStats(IClient client, RequestFunction function, AMFDataList params) {
-    userManager.getUserStats();
-  }
+    // @deprecated
+//  public void getUserStats(IClient client, RequestFunction function, AMFDataList params) {
+//    userManager.getUserStats();
+//  }
 
   public void reportUserStats(IClient client, RequestFunction function, AMFDataList params) {
     userManager.reportUserStats(client, params);
+  }
+
+  public void receivePeerStats(IClient client, RequestFunction function, AMFDataList params) {
+    userManager.processPeerStats(client, params);
   }
 
   public void updateUserInfo(IClient client, RequestFunction function, AMFDataList params) {

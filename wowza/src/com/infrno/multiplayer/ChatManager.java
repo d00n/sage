@@ -32,8 +32,8 @@ public class ChatManager
 		context.put("user_name", user_name);
 		String interpretedMessage = chatExpression.interpret( context );
 		
-		main_app.log( "ChatManager.chatToServer() chat from client came in: "+msgIn );
-		main_app.log( "ChagManager.chatToServer() interpreted cha=" + interpretedMessage );
+		main_app.log( "ChatManager.chatToServer() chat in: "+msgIn );
+		main_app.log( "ChatManager.chatToServer() chat out:" + interpretedMessage );
 		
 		main_app.app_instance.broadcastMsg( "chatToUser", user_name + ": " + interpretedMessage );
 	}

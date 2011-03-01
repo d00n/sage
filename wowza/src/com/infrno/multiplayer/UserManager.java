@@ -33,9 +33,11 @@ public class UserManager {
     users_obj = new AMFDataObj();
   }
 
-  public void getUserStats() {
-    main_app.app_instance.broadcastMsg("getUserStats");
-  }
+  // @deprecated
+//  public void getUserStats() {
+//    main_app.app_instance.broadcastMsg("getUserStats");
+//  }
+
 
   public Boolean userConnect(IClient client, AMFDataList params) {
     // TODO: put in user authentication stuff here
@@ -153,6 +155,12 @@ public class UserManager {
     } catch (Exception e) {
       main_app.error("UserManager.DatabaseManager not online"+ e.getMessage());
     }
+  }
+  
+
+  public void processPeerStats(IClient client, AMFDataList params) {
+    main_app.app_instance.broadcastMsg("processPeerStats");
+    AMFDataObj amfDataObj = (AMFDataObj) params.get(3); 
   }
 
   public void updateUserInfo(IClient client, String suid, AMFDataObj user_obj)
