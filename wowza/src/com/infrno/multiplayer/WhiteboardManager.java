@@ -42,10 +42,10 @@ public class WhiteboardManager
   public void sendImage(IClient client, RequestFunction function,	AMFDataList params) {
     main_app.log("WhiteboardManager.sendImage()");
 
-    AMFDataByteArray image_amfba 	= (AMFDataByteArray) params.get(3);
-    String imageName 				= params.getString(4);
-    String sdID		 				= params.getString(5);
-    String imageServer				= params.getString(6);
+    AMFDataByteArray image_amfba 	  = (AMFDataByteArray) params.get(3);
+    String imageName 				        = params.getString(4);
+    String sdID		 			           	= params.getString(5);
+    String imageServer			       	= params.getString(6);
 
     String hash = new String();
     try {
@@ -70,8 +70,11 @@ public class WhiteboardManager
       main_app.error("sendImage() IOException:"+ioe); 
     }
 
-    String imageURL = imageServer + IMAGE_CACHE_DIR + hashPath + imageName;
+    String path = IMAGE_CACHE_DIR + hashPath + imageName;
+    String imageURL = imageServer + path;
     main_app.returnImageURL(client, params, imageURL, sdID);
+    
+    main_app.databaseManager.saveImage(path);
   }
 
   private static final String convertHashToPath(String hash) {

@@ -185,7 +185,7 @@ public class UserManager {
             user_id, 
             peer_connection_status);
       } catch (Exception e) {
-        main_app.error("UserManager.updateUserInfo() DatabaseManager not online"+ e.getMessage());
+        main_app.error("UserManager.updateUserInfo() e:"+ e.getMessage());
       }
     }
 
