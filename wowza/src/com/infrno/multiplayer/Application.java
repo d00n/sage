@@ -139,8 +139,8 @@ public class Application extends ModuleBase {
 //    userManager.getUserStats();
 //  }
 
-  public void reportUserStats(IClient client, RequestFunction function, AMFDataList params) {
-    userManager.reportUserStats(client, params);
+  public void receiveUserStats(IClient client, RequestFunction function, AMFDataList params) {
+    userManager.relayUserStats(client, params);
   }
 
   public void receivePeerStats(IClient client, RequestFunction function, AMFDataList params) {

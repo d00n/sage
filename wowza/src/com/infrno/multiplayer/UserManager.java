@@ -134,14 +134,15 @@ public class UserManager {
     main_app.app_instance.broadcastMsg("updateUsers", users_obj);
   }
 
-  public void reportUserStats(IClient client, AMFDataList params)
+  public void relayUserStats(IClient client, AMFDataList params)
   {
     main_app.log("UserManager.reportUserStats() client.getLastValidateTime="+client.getLastValidateTime());
+    AMFDataObj serverStatsRecord = (AMFDataObj) params.get(3);		
+    main_app.app_instance.broadcastMsg("receiveServerStats",serverStatsRecord);
 
-    AMFDataObj amfDataObj = (AMFDataObj) params.get(3);		
 
     try {
-      main_app.databaseManager.saveSessionReport(amfDataObj,
+      main_app.databaseManager.saveSessionReport(serverStatsRecord,
           client.getLastValidateTime(),
           client.getPingRoundTripTime(),
           (long) client.getMediaIOPerformanceCounter().getFileInBytesRate(),
@@ -160,8 +161,7 @@ public class UserManager {
 
   public void relayPeerStats(IClient sender_client, AMFDataList params) {
     main_app.log("UserManager.relayPeerStats() clientId="+sender_client.getClientId() );
-    AMFDataObj peerStatsRecord = (AMFDataObj) params.get(3);
-    
+    AMFDataObj peerStatsRecord = (AMFDataObj) params.get(3);    
     main_app.app_instance.broadcastMsg("receivePeerStats",peerStatsRecord);
     
 //    Integer sender_id = sender_client.getClientId();
