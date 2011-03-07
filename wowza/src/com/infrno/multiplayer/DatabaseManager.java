@@ -261,8 +261,8 @@ public class DatabaseManager {
     main_app.log("DatabaseManager.saveSessionReport() appName="
         + main_app.app_instance.getApplication().getName()
         + " session_id=" + _session_id + " room_id="
-        + amfDataObj.getString("room_id") + " local_user_name="
-        + amfDataObj.getString("local_user_name"));
+        + amfDataObj.getString("room_id") + " user_name="
+        + amfDataObj.getString("user_name"));
 
     String wowza_protocol = amfDataObj.getString("wowza_protocol");
     int currentBytesPerSecond = amfDataObj.getInt("currentBytesPerSecond");
@@ -280,8 +280,8 @@ public class DatabaseManager {
     String room_id = amfDataObj.getString("room_id");
     String room_name = amfDataObj.getString("room_name");
     
-    String user_name = amfDataObj.getString("local_user_name");
-    String user_id = amfDataObj.getString("local_user_id");
+    String user_name = amfDataObj.getString("user_name");
+    String user_id = amfDataObj.getString("user_id");
     
     String application_name = main_app.app_instance.getApplication().getName();
 

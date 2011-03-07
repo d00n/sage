@@ -144,7 +144,7 @@ public class Application extends ModuleBase {
   }
 
   public void receivePeerStats(IClient client, RequestFunction function, AMFDataList params) {
-    userManager.processPeerStats(client, params);
+    userManager.relayPeerStats(client, params);
   }
 
   public void updateUserInfo(IClient client, RequestFunction function, AMFDataList params) {

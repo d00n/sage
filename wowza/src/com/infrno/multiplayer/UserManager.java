@@ -158,9 +158,22 @@ public class UserManager {
   }
   
 
-  public void processPeerStats(IClient client, AMFDataList params) {
-    main_app.app_instance.broadcastMsg("processPeerStats");
-    AMFDataObj amfDataObj = (AMFDataObj) params.get(3); 
+  public void relayPeerStats(IClient sender_client, AMFDataList params) {
+    main_app.log("UserManager.relayPeerStats() clientId="+sender_client.getClientId() );
+    AMFDataObj peerStatsRecord = (AMFDataObj) params.get(3);
+    
+    main_app.app_instance.broadcastMsg("receivePeerStats",peerStatsRecord);
+    
+//    Integer sender_id = sender_client.getClientId();
+//    IClient client;    
+//    for (Iterator<IClient> clients_iterator = main_app.app_instance.getClients().iterator(); clients_iterator.hasNext(); ) {
+//      client = clients_iterator.next();
+//      if (client.equals(sender_client)) {
+//        main_app.log("UserManager.processPeerStats() client.equals(sender_client) TRUE");
+//      }else{
+//        main_app.log("UserManager.processPeerStats() client.equals(sender_client) FALSE");
+//      }
+//    }
   }
 
   public void updateUserInfo(IClient client, String suid, AMFDataObj user_obj)
