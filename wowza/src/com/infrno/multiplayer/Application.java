@@ -29,8 +29,7 @@ public class Application extends ModuleBase {
       while (true) {
         try {
           Thread.sleep(SECONDS_BETWEEN_REPORTS * 1000);
-          main_app.app_instance.broadcastMsg("collectClientServerStats");
-          main_app.app_instance.broadcastMsg("collectClientPeerStats");          
+          main_app.app_instance.broadcastMsg("collectClientStats");          
         } catch (InterruptedException e) {
           main_app.log("ReportLoop.run() " + e.toString());
           return;
@@ -130,13 +129,13 @@ public class Application extends ModuleBase {
    * Client Methods
    */
 
-  public void receiveClientServerStats(IClient client, RequestFunction function, AMFDataList params) {
-    userManager.relayClientServerStats(client, params);
+  public void receiveClientStats(IClient client, RequestFunction function, AMFDataList params) {
+    userManager.relayClientStats(client, params);
   }
 
-  public void receiveClientPeerStats(IClient client, RequestFunction function, AMFDataList params) {
-    userManager.relayClientPeerStats(client, params);
-  }
+//  public void receiveClientPeerStats(IClient client, RequestFunction function, AMFDataList params) {
+//    userManager.relayClientPeerStats(client, params);
+//  }
 
   public void updateUserInfo(IClient client, RequestFunction function, AMFDataList params) {
     userManager.updateUserInfo(client, Integer.toString(client.getClientId()), params.getObject(PARAM1));

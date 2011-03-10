@@ -128,11 +128,11 @@ public class UserManager {
     main_app.app_instance.broadcastMsg("updateUsers", users_obj);
   }
 
-  public void relayClientServerStats(IClient client, AMFDataList params)
+  public void relayClientStats(IClient client, AMFDataList params)
   {
-//    main_app.log("UserManager.relayClientServerStats() client.getLastValidateTime="+client.getLastValidateTime());
+//    main_app.log("UserManager.relayClientStats() client.getLastValidateTime="+client.getLastValidateTime());
     AMFDataObj serverStatsRecord = (AMFDataObj) params.get(3);		
-    main_app.app_instance.broadcastMsg("receiveClientServerStats",serverStatsRecord);
+    main_app.app_instance.broadcastMsg("receiveClientStats",serverStatsRecord);
 
 
     try {
