@@ -22,15 +22,15 @@ public class Application extends ModuleBase {
   private static Logger m_logger = Logger.getLogger(Application.class);
 
   private static class ReportLoop implements Runnable {
-    private static final int SECONDS_BETWEEN_REPORTS = 30;
+    private static final int SECONDS_BETWEEN_REPORTS = 1;
     public Application main_app;
 
     public void run() {
       while (true) {
         try {
           Thread.sleep(SECONDS_BETWEEN_REPORTS * 1000);
-          main_app.app_instance.broadcastMsg("getUserStats");
-          main_app.app_instance.broadcastMsg("generatePeerStats");          
+          main_app.app_instance.broadcastMsg("collectClientServerStats");
+          main_app.app_instance.broadcastMsg("collectClientPeerStats");          
         } catch (InterruptedException e) {
           main_app.log("ReportLoop.run() " + e.toString());
           return;
@@ -62,7 +62,7 @@ public class Application extends ModuleBase {
     String fullname = appInstance.getApplication().getName()+"/"+ appInstance.getName();
     getLogger().info("Application.onAppStop() " + fullname);
 
-//    stopReportLoop();
+    stopReportLoop();
 
     try {
       databaseManager.saveSessionEndReport();
@@ -109,7 +109,7 @@ public class Application extends ModuleBase {
     log("Application.onConnect() appName=" + appName);
 
     if (userManager.userConnect(client, params)) {
-//      startReportLoop();
+      startReportLoop();
     }
   }
 
@@ -130,21 +130,12 @@ public class Application extends ModuleBase {
    * Client Methods
    */
 
-  public void chatToServer(IClient client, RequestFunction function, AMFDataList params) {
-    chatManager.chatToServer(client, params);
+  public void receiveClientServerStats(IClient client, RequestFunction function, AMFDataList params) {
+    userManager.relayClientServerStats(client, params);
   }
 
-    // @deprecated
-//  public void getUserStats(IClient client, RequestFunction function, AMFDataList params) {
-//    userManager.getUserStats();
-//  }
-
-  public void receiveUserStats(IClient client, RequestFunction function, AMFDataList params) {
-    userManager.relayUserStats(client, params);
-  }
-
-  public void receivePeerStats(IClient client, RequestFunction function, AMFDataList params) {
-    userManager.relayPeerStats(client, params);
+  public void receiveClientPeerStats(IClient client, RequestFunction function, AMFDataList params) {
+    userManager.relayClientPeerStats(client, params);
   }
 
   public void updateUserInfo(IClient client, RequestFunction function, AMFDataList params) {
@@ -154,7 +145,11 @@ public class Application extends ModuleBase {
   public void sendImage(IClient client, RequestFunction function,	AMFDataList params) {
     whiteboardManager.sendImage(client, function, params);
   }
-
+  
+  public void chatToServer(IClient client, RequestFunction function, AMFDataList params) {
+    chatManager.chatToServer(client, params);
+  }
+  
   public void returnImageURL(IClient client, AMFDataList params, String imageURL, String sdID) {
     getLogger().info("Application.returnImageURL() sdID=" + sdID + ", imageURL="+ imageURL);
 

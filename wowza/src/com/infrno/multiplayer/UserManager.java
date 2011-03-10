@@ -33,12 +33,6 @@ public class UserManager {
     users_obj = new AMFDataObj();
   }
 
-  // @deprecated
-//  public void getUserStats() {
-//    main_app.app_instance.broadcastMsg("getUserStats");
-//  }
-
-
   public Boolean userConnect(IClient client, AMFDataList params) {
     // TODO: put in user authentication stuff here
     main_app.log("UserManager.userConnect() clientId:"
@@ -134,11 +128,11 @@ public class UserManager {
     main_app.app_instance.broadcastMsg("updateUsers", users_obj);
   }
 
-  public void relayUserStats(IClient client, AMFDataList params)
+  public void relayClientServerStats(IClient client, AMFDataList params)
   {
-    main_app.log("UserManager.reportUserStats() client.getLastValidateTime="+client.getLastValidateTime());
+//    main_app.log("UserManager.relayClientServerStats() client.getLastValidateTime="+client.getLastValidateTime());
     AMFDataObj serverStatsRecord = (AMFDataObj) params.get(3);		
-    main_app.app_instance.broadcastMsg("receiveServerStats",serverStatsRecord);
+    main_app.app_instance.broadcastMsg("receiveClientServerStats",serverStatsRecord);
 
 
     try {
@@ -159,10 +153,10 @@ public class UserManager {
   }
   
 
-  public void relayPeerStats(IClient sender_client, AMFDataList params) {
-    main_app.log("UserManager.relayPeerStats() clientId="+sender_client.getClientId() );
+  public void relayClientPeerStats(IClient sender_client, AMFDataList params) {
+//    main_app.log("UserManager.relayClientPeerStats() clientId="+sender_client.getClientId() );
     AMFDataObj peerStatsRecord = (AMFDataObj) params.get(3);    
-    main_app.app_instance.broadcastMsg("receivePeerStats",peerStatsRecord);
+    main_app.app_instance.broadcastMsg("receiveClientPeerStats",peerStatsRecord);
     
 //    Integer sender_id = sender_client.getClientId();
 //    IClient client;    

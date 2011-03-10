@@ -258,11 +258,11 @@ public class DatabaseManager {
       long messagesOutCountRate) {
 
 
-    main_app.log("DatabaseManager.saveSessionReport() appName="
-        + main_app.app_instance.getApplication().getName()
-        + " session_id=" + _session_id + " room_id="
-        + amfDataObj.getString("room_id") + " user_name="
-        + amfDataObj.getString("user_name"));
+//    main_app.log("DatabaseManager.saveSessionReport() appName="
+//        + main_app.app_instance.getApplication().getName()
+//        + " session_id=" + _session_id + " room_id="
+//        + amfDataObj.getString("room_id") + " user_name="
+//        + amfDataObj.getString("user_name"));
 
     String wowza_protocol = amfDataObj.getString("wowza_protocol");
     int currentBytesPerSecond = amfDataObj.getInt("currentBytesPerSecond");
