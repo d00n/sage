@@ -22,6 +22,8 @@ public class UserManager {
   private static String SHARED_KEY = "871a3f2c392e10ca2e04c442f1eedb65";
   private static String SHARED_OBJECT_NAME = "whiteboard_contents";
 
+  
+  // TODO rename users_obj
   public AMFDataObj users_obj;
   public String room_id;
   public String room_name;
@@ -131,12 +133,12 @@ public class UserManager {
   public void relayClientStats(IClient client, AMFDataList params)
   {
 //    main_app.log("UserManager.relayClientStats() client.getLastValidateTime="+client.getLastValidateTime());
-    AMFDataObj serverStatsRecord = (AMFDataObj) params.get(3);		
-    main_app.app_instance.broadcastMsg("receiveClientStats",serverStatsRecord);
+    AMFDataObj clientServerStatsRecord = (AMFDataObj) params.get(3);		
+    main_app.app_instance.broadcastMsg("receiveClientStats",clientServerStatsRecord);
 
 
     try {
-      main_app.databaseManager.saveSessionReport(serverStatsRecord,
+      main_app.databaseManager.saveSessionReport(clientServerStatsRecord,
           client.getLastValidateTime(),
           client.getPingRoundTripTime(),
           (long) client.getMediaIOPerformanceCounter().getFileInBytesRate(),
@@ -152,22 +154,64 @@ public class UserManager {
     }
   }
   
-
-  public void relayClientPeerStats(IClient sender_client, AMFDataList params) {
-//    main_app.log("UserManager.relayClientPeerStats() clientId="+sender_client.getClientId() );
-    AMFDataObj peerStatsRecord = (AMFDataObj) params.get(3);    
-    main_app.app_instance.broadcastMsg("receiveClientPeerStats",peerStatsRecord);
+  public void collectServerStats() {
+    AMFDataObj serverStats = new AMFDataObj(); 
     
-//    Integer sender_id = sender_client.getClientId();
-//    IClient client;    
-//    for (Iterator<IClient> clients_iterator = main_app.app_instance.getClients().iterator(); clients_iterator.hasNext(); ) {
-//      client = clients_iterator.next();
-//      if (client.equals(sender_client)) {
-//        main_app.log("UserManager.processPeerStats() client.equals(sender_client) TRUE");
-//      }else{
-//        main_app.log("UserManager.processPeerStats() client.equals(sender_client) FALSE");
-//      }
-//    }
+    serverStats.put("PingRoundTripTime", (int) main_app.app_instance.getIOPerformanceCounter().getFileInBytes());
+    serverStats.put("FileInBytes", (int) main_app.app_instance.getIOPerformanceCounter().getFileInBytes());
+    serverStats.put("FileInBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getFileInBytesRate());
+    serverStats.put("MessagesInBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInBytes());
+    serverStats.put("MessagesInBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInBytesRate());
+    serverStats.put("MessagesInCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInCount());
+    serverStats.put("MessagesInCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInCountRate());
+    serverStats.put("MessagesLossBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossBytes());
+    serverStats.put("MessagesLossBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossBytesRate());
+    serverStats.put("MessagesLossCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossCount());
+    serverStats.put("MessagesLossCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossCountRate());
+    serverStats.put("MessagesOutBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutBytes());
+    serverStats.put("MessagesOutBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutBytesRate());
+    serverStats.put("MessagesOutCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutCount());
+    serverStats.put("MessagesOutCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutCountRate());    
+    // "Not implemented"
+    serverStats.put("FileOutBytes", (int) main_app.app_instance.getIOPerformanceCounter().getFileOutBytes());
+    serverStats.put("FileOutBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getFileOutBytesRate());   
+    
+    IClient client;    
+    AMFDataObj server_clientStats;
+    for (Iterator<IClient> clients_iterator = main_app.app_instance.getClients().iterator(); clients_iterator.hasNext(); ) {
+      client = clients_iterator.next();
+      server_clientStats = new AMFDataObj();
+      String suid = Integer.toString(client.getClientId());
+      server_clientStats.put("suid", suid);
+      
+      AMFDataObj user_obj = (AMFDataObj) users_obj.get(suid);
+      
+      server_clientStats.put("user_name", user_obj.getString("user_name"));
+      
+      server_clientStats.put("PingRoundTripTime", (int) client.getPingRoundTripTime());
+      server_clientStats.put("PingTimeout", (int) client.getPingTimeout());
+      server_clientStats.put("FileInBytes", (int) client.getTotalIOPerformanceCounter().getFileInBytes());
+      server_clientStats.put("FileInBytesRate", (int) client.getTotalIOPerformanceCounter().getFileInBytesRate());
+      server_clientStats.put("MessagesInBytes", (int) client.getTotalIOPerformanceCounter().getMessagesInBytes());
+      server_clientStats.put("MessagesInBytesRate", (int) client.getTotalIOPerformanceCounter().getMessagesInBytesRate());
+      server_clientStats.put("MessagesInCount", (int) client.getTotalIOPerformanceCounter().getMessagesInCount());
+      server_clientStats.put("MessagesInCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesInCountRate());
+      server_clientStats.put("MessagesLossBytes", (int) client.getTotalIOPerformanceCounter().getMessagesLossBytes());
+      server_clientStats.put("MessagesLossBytesRate", (int) client.getTotalIOPerformanceCounter().getMessagesLossBytesRate());
+      server_clientStats.put("MessagesLossCount", (int) client.getTotalIOPerformanceCounter().getMessagesLossCount());
+      server_clientStats.put("MessagesLossCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesLossCountRate());
+      server_clientStats.put("MessagesOutBytes", (int) client.getTotalIOPerformanceCounter().getMessagesOutBytes());
+      server_clientStats.put("MessagesOutBytesRate", (int) client.getTotalIOPerformanceCounter().getMessagesOutBytesRate());
+      server_clientStats.put("MessagesOutCount", (int) client.getTotalIOPerformanceCounter().getMessagesOutCount());
+      server_clientStats.put("MessagesOutCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesOutCountRate());      
+      // "Not implemented"
+      server_clientStats.put("FileOutBytes", (int) client.getTotalIOPerformanceCounter().getFileOutBytes());
+      server_clientStats.put("FileOutBytesRate", (int) client.getTotalIOPerformanceCounter().getFileOutBytesRate());      
+      
+      serverStats.put(suid, server_clientStats);
+    }     
+    
+    main_app.app_instance.broadcastMsg("receiveServerStats",serverStats);
   }
 
   public void updateUserInfo(IClient client, String suid, AMFDataObj user_obj)

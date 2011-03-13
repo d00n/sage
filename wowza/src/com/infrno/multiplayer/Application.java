@@ -29,7 +29,8 @@ public class Application extends ModuleBase {
       while (true) {
         try {
           Thread.sleep(SECONDS_BETWEEN_REPORTS * 1000);
-          main_app.app_instance.broadcastMsg("collectClientStats");          
+          main_app.app_instance.broadcastMsg("collectClientStats");      
+          main_app.userManager.collectServerStats();
         } catch (InterruptedException e) {
           main_app.log("ReportLoop.run() " + e.toString());
           return;
