@@ -158,60 +158,65 @@ public class UserManager {
     AMFDataObj serverStats = new AMFDataObj(); 
     AMFDataObj server_serverStats = new AMFDataObj(); 
     
-    server_serverStats.put("FileInBytes", (int) main_app.app_instance.getIOPerformanceCounter().getFileInBytes());
-    server_serverStats.put("FileInBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getFileInBytesRate());
-    server_serverStats.put("MessagesInBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInBytes());
-    server_serverStats.put("MessagesInBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInBytesRate());
-    server_serverStats.put("MessagesInCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInCount());
-    server_serverStats.put("MessagesInCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInCountRate());
-    server_serverStats.put("MessagesLossBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossBytes());
-    server_serverStats.put("MessagesLossBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossBytesRate());
-    server_serverStats.put("MessagesLossCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossCount());
-    server_serverStats.put("MessagesLossCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossCountRate());
-    server_serverStats.put("MessagesOutBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutBytes());
-    server_serverStats.put("MessagesOutBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutBytesRate());
-    server_serverStats.put("MessagesOutCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutCount());
-    server_serverStats.put("MessagesOutCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutCountRate());    
-    // "Not implemented"
-    server_serverStats.put("FileOutBytes", (int) main_app.app_instance.getIOPerformanceCounter().getFileOutBytes());
-    server_serverStats.put("FileOutBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getFileOutBytesRate());   
-    
-    serverStats.put("server record", server_serverStats);
-
-    
     IClient client;    
+    Integer client_count = 0;
     AMFDataObj server_clientStats;
     for (Iterator<IClient> clients_iterator = main_app.app_instance.getClients().iterator(); clients_iterator.hasNext(); ) {
       client = clients_iterator.next();
+      client_count++;
       server_clientStats = new AMFDataObj();
       String suid = Integer.toString(client.getClientId());
       server_clientStats.put("suid", suid);
       
       AMFDataObj user_obj = (AMFDataObj) users_obj.get(suid);
       
-      server_clientStats.put("user_name", user_obj.getString("user_name"));
+      if (user_obj != null){
+        server_clientStats.put("user_name", user_obj.getString("user_name"));
+        
+        server_clientStats.put("PingRoundTripTime", (int) client.getPingRoundTripTime());
+        server_clientStats.put("PingTimeout", (int) client.getPingTimeout());
+        server_clientStats.put("FileInBytes", (int) client.getTotalIOPerformanceCounter().getFileInBytes());
+        server_clientStats.put("FileInBytesRate", (int) client.getTotalIOPerformanceCounter().getFileInBytesRate());
+        server_clientStats.put("MessagesInBytes", (int) client.getTotalIOPerformanceCounter().getMessagesInBytes());
+        server_clientStats.put("MessagesInBytesRate", (int) client.getTotalIOPerformanceCounter().getMessagesInBytesRate());
+        server_clientStats.put("MessagesInCount", (int) client.getTotalIOPerformanceCounter().getMessagesInCount());
+        server_clientStats.put("MessagesInCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesInCountRate());
+        server_clientStats.put("MessagesLossBytes", (int) client.getTotalIOPerformanceCounter().getMessagesLossBytes());
+        server_clientStats.put("MessagesLossBytesRate", (int) client.getTotalIOPerformanceCounter().getMessagesLossBytesRate());
+        server_clientStats.put("MessagesLossCount", (int) client.getTotalIOPerformanceCounter().getMessagesLossCount());
+        server_clientStats.put("MessagesLossCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesLossCountRate());
+        server_clientStats.put("MessagesOutBytes", (int) client.getTotalIOPerformanceCounter().getMessagesOutBytes());
+        server_clientStats.put("MessagesOutBytesRate", (int) client.getTotalIOPerformanceCounter().getMessagesOutBytesRate());
+        server_clientStats.put("MessagesOutCount", (int) client.getTotalIOPerformanceCounter().getMessagesOutCount());
+        server_clientStats.put("MessagesOutCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesOutCountRate());      
+        // "Not implemented"
+  //      server_clientStats.put("FileOutBytes", (int) client.getTotalIOPerformanceCounter().getFileOutBytes());
+  //      server_clientStats.put("FileOutBytesRate", (int) client.getTotalIOPerformanceCounter().getFileOutBytesRate());      
+        
+        serverStats.put(suid, server_clientStats);
+      }
       
-      server_clientStats.put("PingRoundTripTime", (int) client.getPingRoundTripTime());
-      server_clientStats.put("PingTimeout", (int) client.getPingTimeout());
-      server_clientStats.put("FileInBytes", (int) client.getTotalIOPerformanceCounter().getFileInBytes());
-      server_clientStats.put("FileInBytesRate", (int) client.getTotalIOPerformanceCounter().getFileInBytesRate());
-      server_clientStats.put("MessagesInBytes", (int) client.getTotalIOPerformanceCounter().getMessagesInBytes());
-      server_clientStats.put("MessagesInBytesRate", (int) client.getTotalIOPerformanceCounter().getMessagesInBytesRate());
-      server_clientStats.put("MessagesInCount", (int) client.getTotalIOPerformanceCounter().getMessagesInCount());
-      server_clientStats.put("MessagesInCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesInCountRate());
-      server_clientStats.put("MessagesLossBytes", (int) client.getTotalIOPerformanceCounter().getMessagesLossBytes());
-      server_clientStats.put("MessagesLossBytesRate", (int) client.getTotalIOPerformanceCounter().getMessagesLossBytesRate());
-      server_clientStats.put("MessagesLossCount", (int) client.getTotalIOPerformanceCounter().getMessagesLossCount());
-      server_clientStats.put("MessagesLossCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesLossCountRate());
-      server_clientStats.put("MessagesOutBytes", (int) client.getTotalIOPerformanceCounter().getMessagesOutBytes());
-      server_clientStats.put("MessagesOutBytesRate", (int) client.getTotalIOPerformanceCounter().getMessagesOutBytesRate());
-      server_clientStats.put("MessagesOutCount", (int) client.getTotalIOPerformanceCounter().getMessagesOutCount());
-      server_clientStats.put("MessagesOutCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesOutCountRate());      
+      server_serverStats.put("client_count", client_count);  
+      
+      server_serverStats.put("FileInBytes", (int) main_app.app_instance.getIOPerformanceCounter().getFileInBytes());
+      server_serverStats.put("FileInBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getFileInBytesRate());
+//      server_serverStats.put("MessagesInBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInBytes());
+      server_serverStats.put("MessagesInBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInBytesRate());
+//      server_serverStats.put("MessagesInCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInCount());
+      server_serverStats.put("MessagesInCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInCountRate());
+      server_serverStats.put("MessagesLossBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossBytes());
+      server_serverStats.put("MessagesLossBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossBytesRate());
+      server_serverStats.put("MessagesLossCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossCount());
+      server_serverStats.put("MessagesLossCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossCountRate());
+//      server_serverStats.put("MessagesOutBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutBytes());
+      server_serverStats.put("MessagesOutBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutBytesRate());
+//      server_serverStats.put("MessagesOutCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutCount());
+      server_serverStats.put("MessagesOutCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutCountRate());    
       // "Not implemented"
-      server_clientStats.put("FileOutBytes", (int) client.getTotalIOPerformanceCounter().getFileOutBytes());
-      server_clientStats.put("FileOutBytesRate", (int) client.getTotalIOPerformanceCounter().getFileOutBytesRate());      
+//      server_serverStats.put("FileOutBytes", (int) main_app.app_instance.getIOPerformanceCounter().getFileOutBytes());
+//      server_serverStats.put("FileOutBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getFileOutBytesRate());   
       
-      serverStats.put(suid, server_clientStats);
+      serverStats.put("server_record", server_serverStats);
     }     
     
     main_app.app_instance.broadcastMsg("receiveServerStats",serverStats);
