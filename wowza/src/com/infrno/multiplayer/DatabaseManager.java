@@ -15,6 +15,7 @@ public class DatabaseManager {
   private String db_instance_name;
 
   private Connection _conn;
+  private PreparedStatement _saveImage_ps;
   private PreparedStatement _sessionStart_ps;
   private PreparedStatement _sessionEnd_ps;
   private PreparedStatement _sessionFlap_ps;
@@ -64,6 +65,8 @@ public class DatabaseManager {
   }
 
   private void setupPreparedStatements() {
+    
+    String saveImageSql = "insert into image (session_id, path) values (?,?)";
 
     String sessionStartSql = "insert into session " 
       + "(room_id, "
@@ -164,6 +167,7 @@ public class DatabaseManager {
       + ") values (?,?,?,?,?,?,?)";
 
     try {
+      _saveImage_ps = _conn.prepareStatement(saveImageSql);
       _sessionMemberStart_ps = _conn.prepareStatement(sessionMemberStartSql);
       _sessionMemberEnd_ps = _conn.prepareStatement(sessionMemberEndSql);
       _sessionReport_ps = _conn.prepareStatement(sessionReportSql);
@@ -182,6 +186,25 @@ public class DatabaseManager {
     } catch (SQLException e) {
       main_app.error("DatabaseManager.close() " + e.getMessage());
     }
+  }
+  
+  
+  
+  public void saveImage(String path) {
+    main_app.log("DatabaseManager.saveImage() session_id="+ _session_id);
+
+    try {
+      _saveImage_ps.clearParameters();
+
+      _saveImage_ps.setInt(1, _session_id);
+      _saveImage_ps.setString(2, path);
+
+      _saveImage_ps.execute();
+    } catch (SQLException e) {
+      main_app.error("saveSessionStartReport(): execute(): "
+          + e.toString());
+    }
+
   }
 
   public Boolean saveSessionStart(AMFDataObj amfDataObj) {
@@ -235,11 +258,11 @@ public class DatabaseManager {
       long messagesOutCountRate) {
 
 
-    main_app.log("DatabaseManager.saveSessionReport() appName="
-        + main_app.app_instance.getApplication().getName()
-        + " session_id=" + _session_id + " room_id="
-        + amfDataObj.getString("room_id") + " user_name="
-        + amfDataObj.getString("user_name"));
+//    main_app.log("DatabaseManager.saveSessionReport() appName="
+//        + main_app.app_instance.getApplication().getName()
+//        + " session_id=" + _session_id + " room_id="
+//        + amfDataObj.getString("room_id") + " user_name="
+//        + amfDataObj.getString("user_name"));
 
     String wowza_protocol = amfDataObj.getString("wowza_protocol");
     int currentBytesPerSecond = amfDataObj.getInt("currentBytesPerSecond");
@@ -253,10 +276,13 @@ public class DatabaseManager {
     int droppedFrames = amfDataObj.getInt("droppedFrames");
     int videoByteCount = amfDataObj.getInt("videoByteCount");
     int srtt = amfDataObj.getInt("SRTT");
+    
     String room_id = amfDataObj.getString("room_id");
+    String room_name = amfDataObj.getString("room_name");
+    
     String user_name = amfDataObj.getString("user_name");
     String user_id = amfDataObj.getString("user_id");
-    String room_name = amfDataObj.getString("room_name");
+    
     String application_name = main_app.app_instance.getApplication().getName();
 
     try {

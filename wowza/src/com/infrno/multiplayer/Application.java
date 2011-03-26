@@ -22,14 +22,15 @@ public class Application extends ModuleBase {
   private static Logger m_logger = Logger.getLogger(Application.class);
 
   private static class ReportLoop implements Runnable {
-    private static final int SECONDS_BETWEEN_REPORTS = 30;
+    private static final int SECONDS_BETWEEN_REPORTS = 3;
     public Application main_app;
 
     public void run() {
       while (true) {
         try {
           Thread.sleep(SECONDS_BETWEEN_REPORTS * 1000);
-          main_app.app_instance.broadcastMsg("getUserStats");
+          main_app.app_instance.broadcastMsg("collectClientStats");      
+          main_app.userManager.collectServerStats();
         } catch (InterruptedException e) {
           main_app.log("ReportLoop.run() " + e.toString());
           return;
@@ -129,17 +130,13 @@ public class Application extends ModuleBase {
    * Client Methods
    */
 
-  public void chatToServer(IClient client, RequestFunction function, AMFDataList params) {
-    chatManager.chatToServer(client, params);
+  public void receiveClientStats(IClient client, RequestFunction function, AMFDataList params) {
+    userManager.relayClientStats(client, params);
   }
 
-  public void getUserStats(IClient client, RequestFunction function, AMFDataList params) {
-    userManager.getUserStats();
-  }
-
-  public void reportUserStats(IClient client, RequestFunction function, AMFDataList params) {
-    userManager.reportUserStats(client, params);
-  }
+//  public void receiveClientPeerStats(IClient client, RequestFunction function, AMFDataList params) {
+//    userManager.relayClientPeerStats(client, params);
+//  }
 
   public void updateUserInfo(IClient client, RequestFunction function, AMFDataList params) {
     userManager.updateUserInfo(client, Integer.toString(client.getClientId()), params.getObject(PARAM1));
@@ -148,7 +145,11 @@ public class Application extends ModuleBase {
   public void sendImage(IClient client, RequestFunction function,	AMFDataList params) {
     whiteboardManager.sendImage(client, function, params);
   }
-
+  
+  public void chatToServer(IClient client, RequestFunction function, AMFDataList params) {
+    chatManager.chatToServer(client, params);
+  }
+  
   public void returnImageURL(IClient client, AMFDataList params, String imageURL, String sdID) {
     getLogger().info("Application.returnImageURL() sdID=" + sdID + ", imageURL="+ imageURL);
 
