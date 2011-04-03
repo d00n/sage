@@ -16,4 +16,6 @@ def getLatestImageURL(req):
   row = cursor.fetchall()
   path = row[0]
   conn.close()
-  return path
+
+  url = 'http://wowza.infrno.net' + path
+  return url
