@@ -37,11 +37,12 @@ public class UserManager {
 
   public Boolean userConnect(IClient client, AMFDataList params) {
     // TODO: put in user authentication stuff here
-    main_app.log("UserManager.userConnect() clientId:"
-        + client.getClientId() + ", client count:"
-        + main_app.app_instance.getClientCount());
+    main_app.log("UserManager.userConnect() clientId:" + client.getClientId() 
+        + ", client count:" + main_app.app_instance.getClientCount());
 
     AMFDataObj curr_user_obj = (AMFDataObj) params.get(3);
+    
+    // TODO: How much of this data ought to live in curr_user_obj?
     String auth_key = params.getString(4);
     room_id = params.getString(5);
     room_name = params.getString(6);
@@ -84,7 +85,7 @@ public class UserManager {
     // main_app.log("client getUri "+client.getUri());
 
     try {
-      main_app.databaseManager.saveSessionStart(curr_user_obj);
+      main_app.databaseManager.saveSessionStart(curr_user_obj, room_name);
       main_app.databaseManager.saveSessionMemberStart(room_id, 
           room_name,
           curr_user_obj.getString("user_id"), 

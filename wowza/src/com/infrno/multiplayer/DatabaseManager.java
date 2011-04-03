@@ -207,20 +207,18 @@ public class DatabaseManager {
 
   }
 
-  public Boolean saveSessionStart(AMFDataObj amfDataObj) {
+  public Boolean saveSessionStart(AMFDataObj amfDataObj, String room_name) {
     main_app.log("DatabaseManager.saveSessionStart() appName="
     + main_app.app_instance.getApplication().getName()
     + " session_id=" + _session_id 
-    + " room_id=" + amfDataObj.getString("room_id") 
+    + " room_name=" + room_name 
     + " user_name=" + amfDataObj.getString("user_name"));    
 
     if (_session_id > 0) {
       main_app.log("DatabaseManager.saveSessionStartReport() aborting because session_id has already been set");
       return true;
     }
-
-    String room_name = amfDataObj.getString("room_name");
-
+    
     try {
       _sessionStart_ps.clearParameters();
 
