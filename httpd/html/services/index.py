@@ -13,9 +13,9 @@ def getLatestImageURL(req):
   conn = MySQLdb.connect(host='localhost',user='sage_rw',passwd='sk00bysnack99',db='sage')
   cursor = conn.cursor()
   cursor.execute('select path from image order by created_on desc limit 1')
-  row = cursor.fetchall()
+  row = cursor.fetchone()
   path = row[0]
   conn.close()
 
-  url = 'http://wowza.infrno.net' + path
+  url = "http://wowza.infrno.net%s" % row[0]
   return url

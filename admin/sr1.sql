@@ -1,10 +1,4 @@
-select session_id,
-application_name,
-room_name,
-room_id,
-user_name,
-user_id,
-reported_at,
+select
 c_audioBytesPerSecond as a,
 c_videoBytesPerSecond as b ,
 c_dataBytesPerSecond as c,
@@ -20,13 +14,12 @@ c_wowzaProtocol as m,
 s_lastValidatedTime as n,
 s_pingRtt as o,
 s_fileInBytesRate as p,
-s_fileOutBytesRate as q,
+s_fileOutBytesRate,
 s_messagesInBytesRate as r ,
 s_messagesInCountRate as s ,
 s_messagesLossBytesRate as t ,
 s_messagesLossCountRate as u,
 s_messagesOutBytesRate as v,
 s_messagesOutCountRate as w
-
 from session_report 
-limit 500;
+where application_name = 'whiteboard'
