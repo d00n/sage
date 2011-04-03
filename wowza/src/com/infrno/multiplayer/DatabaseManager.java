@@ -208,8 +208,11 @@ public class DatabaseManager {
   }
 
   public Boolean saveSessionStart(AMFDataObj amfDataObj) {
-    main_app.log("DatabaseManager.saveSessionStartReport() session_id="
-        + _session_id);
+    main_app.log("DatabaseManager.saveSessionStart() appName="
+    + main_app.app_instance.getApplication().getName()
+    + " session_id=" + _session_id 
+    + " room_id=" + amfDataObj.getString("room_id") 
+    + " user_name=" + amfDataObj.getString("user_name"));    
 
     if (_session_id > 0) {
       main_app.log("DatabaseManager.saveSessionStartReport() aborting because session_id has already been set");
@@ -522,7 +525,7 @@ public class DatabaseManager {
       String user_id, 
       String peer_connection_status) {
 
-    main_app.log("saveSessionMemberFlap() appName="
+    main_app.log("DatabaseManager.saveSessionMemberFlap() appName="
         + main_app.app_instance.getApplication().getName()
         + " room_id=" + room_id
         + " room_name=" + room_name
@@ -541,17 +544,19 @@ public class DatabaseManager {
       _sessionFlap_ps.setString(7, peer_connection_status);
       _sessionFlap_ps.execute();
     } catch(SQLException e){
-      main_app.error("saveSessionMemberFlap() sqlexecuteException: "
+      main_app.error("DatabaseManager.saveSessionMemberFlap() sqlexecuteException: "
           + e.toString());
     }
 
   }
 
   public void saveSessionMemberEnd(int wowza_client_id) {
-    main_app.log("DatabaseManager.saveSessionMemberEnd() session_id="
-        + _session_id);
-
-    // TODO: add up key totals from session_report rows, and save to session_member
+    main_app.log("DatabaseManager.saveSessionMemberEnd() appName="
+        + main_app.app_instance.getApplication().getName()
+        + " session_id=" + _session_id   
+        + " wowza_client_id=" + wowza_client_id );    
+    
+    // TODO: add up key totals from session_report rows, and save to session_member    
 
     try {
       _sessionMemberEnd_ps.clearParameters();
@@ -566,8 +571,10 @@ public class DatabaseManager {
   }
 
   public void saveSessionEndReport() {
-    main_app.log("DatabaseManager.saveSessionEndReport() session_id="
-        + _session_id);
+    main_app.log("DatabaseManager.saveSessionEndReport() appName="
+        + main_app.app_instance.getApplication().getName()
+        + " session_id=" + _session_id );    
+    
 
     // TODO: add up key totals from session_report rows, and save to session
 
@@ -578,8 +585,7 @@ public class DatabaseManager {
 
       _sessionEnd_ps.execute();
     } catch (SQLException e) {
-      main_app
-      .error("saveSessionEndReport(): execute(): " + e.toString());
+      main_app.error("DatabaseManager.saveSessionEndReport(): execute(): " + e.toString());
     }
   }
 }
