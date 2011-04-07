@@ -14,6 +14,9 @@ import com.wowza.wms.amf.AMFDataMixedArray;
 import com.wowza.wms.amf.AMFDataObj;
 import com.wowza.wms.amf.AMFObj;
 import com.wowza.wms.client.IClient;
+import com.wowza.wms.logging.WMSLogger;
+import com.wowza.wms.logging.WMSLoggerFactory;
+import com.wowza.wms.module.IModulePingResult;
 import com.wowza.wms.sharedobject.ISharedObject;
 import com.wowza.wms.sharedobject.ISharedObjects;
 import com.wowza.wms.sharedobject.SharedObject;
@@ -154,16 +157,37 @@ public class UserManager {
       main_app.error("UserManager.DatabaseManager not online"+ e.getMessage());
     }
   }
+  class PingResult implements IModulePingResult
+  {
+    public void onResult(IClient client, long pingTime, int pingId, boolean result)
+    {
+      WMSLogger log = WMSLoggerFactory.getLogger(null);
+      log.debug("onResult: result:"+result);
+      if (!result)
+      {
+        // client has died lets kill it
+        client.getAppInstance().shutdownClient(client);
+      }
+      else
+        log.debug("lastPingTime: "+client.getPingRoundTripTime());
+    }
+  }
+
+
   
   public void collectServerStats() {
     AMFDataObj serverStats = new AMFDataObj(); 
     AMFDataObj server_serverStats = new AMFDataObj(); 
     
     IClient client;    
+
     Integer client_count = 0;
     AMFDataObj server_clientStats;
     for (Iterator<IClient> clients_iterator = main_app.app_instance.getClients().iterator(); clients_iterator.hasNext(); ) {
       client = clients_iterator.next();
+      
+      client.ping(new PingResult());
+
       client_count++;
       server_clientStats = new AMFDataObj();
       String suid = Integer.toString(client.getClientId());

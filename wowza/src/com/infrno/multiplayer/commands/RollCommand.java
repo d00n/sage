@@ -1,11 +1,15 @@
 package com.infrno.multiplayer.commands;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 public class RollCommand implements ChatExpression {
 	public static Evaluator createEvaluator( ) {
@@ -80,14 +84,21 @@ public class RollCommand implements ChatExpression {
 		
 		
 		Random random = new Random( );
+		Integer[] rolls = new Integer[m_numberOfDie];
 	
 		int total = 0;
 		for( int i = 0; i < m_numberOfDie.intValue( ); i++ ) {
 			int roll = random.nextInt( m_numberOfSides ) + 1;
 			total += roll;
-			result.append( roll );
-			result.append( ", " );
+			rolls[i] = roll;
 		}
+		
+		Arrays.sort(rolls);
+		
+    for(int i = 0; i < m_numberOfDie.intValue( ); i++ ) {
+      result.append( rolls[i] );
+      result.append( ", " );
+    }	
 		
 		total += m_modifier;
 		
