@@ -32,10 +32,16 @@ public class ChatManager
 		context.put("user_name", user_name);
 		String interpretedMessage = chatExpression.interpret( context );
 		
+		// TODO yeah, not pretty. 
+		// But until we interpret anything other than die rolls, this will do
+		boolean dieRoll = false;
+		if (interpretedMessage.length() != msgIn.length())
+		  dieRoll = true;
+		
 		main_app.log( "ChatManager.chatToServer() chat in: <"+ user_name +"> "+ msgIn );
 		main_app.log( "ChatManager.chatToServer() chat out: <"+ user_name +"> "+ interpretedMessage );
 		
-		main_app.app_instance.broadcastMsg( "chatToUser", user_name + ": " + interpretedMessage );
+		main_app.app_instance.broadcastMsg( "chatToUser", user_name + ": " + interpretedMessage, dieRoll );
 	}
 	
 }
