@@ -77,7 +77,7 @@ public class RollCommand implements ChatExpression {
 			return result.toString();
 		}
 		
-		if( m_numberOfSides.intValue( ) > 100 ) {
+		if( m_numberOfSides.intValue( ) > 10000 ) {
 			result.append(MAGIC_ROLL);
 			return result.toString();
 		}
