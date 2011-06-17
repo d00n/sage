@@ -176,20 +176,23 @@ public class Application extends ModuleBase {
   public void logMessage(IClient client, RequestFunction function, AMFDataList params) {
     
     String user_name;
+    String client_id;
     String room_id;
       
     // It is possible for clients to log before their details have been recorded by userManager
     // Specifically, during the initial server connection
     try {
+      client_id = Integer.toString(client.getClientId());
       user_name = userManager.getClientInfo(Integer.toString(client.getClientId())).getString("user_name");
       room_id = userManager.room_id;
     } catch (java.lang.NullPointerException e) {
-      user_name = "user_name_XXX";
-      room_id = "room_id_XXX";
+      user_name = "user_name_X";
+      client_id = "user_id_X";
+      room_id = "room_id_X";
     }
     
     String msgIn = params.getString(3);
-    getLogger().info("room_id="+ room_id +" "+ user_name +" "+ msgIn);
+    getLogger().info("room_id="+ room_id +" client_id="+ client_id +"("+ user_name +") "+ msgIn);
   }
 
 }
