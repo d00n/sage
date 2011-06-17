@@ -10,26 +10,26 @@ import com.wowza.wms.module.ModuleBase;
 import com.wowza.wms.request.RequestFunction;
 
 public class Application extends ModuleBase {
-  private static String VERSION = "v0.8.1";
+  private static String       VERSION  = "v0.8.1";
   public IApplicationInstance app_instance;
-  public ChatManager chatManager;
-  public DatabaseManager databaseManager;
-  public StreamManager streamManager;
-  public UserManager userManager;
-  public WhiteboardManager whiteboardManager;
-  private Thread reportLoopThread;
+  public ChatManager          chatManager;
+  public DatabaseManager      databaseManager;
+  public StreamManager        streamManager;
+  public UserManager          userManager;
+  public WhiteboardManager    whiteboardManager;
+  private Thread              reportLoopThread;
 
-  private static Logger m_logger = Logger.getLogger(Application.class);
+  private static Logger       m_logger = Logger.getLogger(Application.class);
 
   private static class ReportLoop implements Runnable {
     private static final int SECONDS_BETWEEN_REPORTS = 3;
-    public Application main_app;
+    public Application       main_app;
 
     public void run() {
       while (true) {
         try {
           Thread.sleep(SECONDS_BETWEEN_REPORTS * 1000);
-          main_app.app_instance.broadcastMsg("collectClientStats");      
+          main_app.app_instance.broadcastMsg("collectClientStats");
           main_app.userManager.collectServerStats();
         } catch (InterruptedException e) {
           main_app.log("ReportLoop.run() " + e.toString());
@@ -45,8 +45,11 @@ public class Application extends ModuleBase {
     String appName = appInstance.getApplication().getName();
     String contextString = appInstance.getContextStr();
 
-    String fullname = appInstance.getApplication().getName() +"/"+ appInstance.getName();
-    getLogger().info("Application.onAppStart() "+VERSION+", appName="+appName+", contextString="+contextString);
+    String fullname = appInstance.getApplication().getName() + "/"
+        + appInstance.getName();
+    getLogger().info(
+        "Application.onAppStart() " + VERSION + ", appName=" + appName
+            + ", contextString=" + contextString);
 
     m_logger.info("starting application");
 
@@ -59,7 +62,8 @@ public class Application extends ModuleBase {
   }
 
   public void onAppStop(IApplicationInstance appInstance) {
-    String fullname = appInstance.getApplication().getName()+"/"+ appInstance.getName();
+    String fullname = appInstance.getApplication().getName() + "/"
+        + appInstance.getName();
     getLogger().info("Application.onAppStop() " + fullname);
 
     stopReportLoop();
@@ -102,7 +106,8 @@ public class Application extends ModuleBase {
     }
   }
 
-  public void onConnect(IClient client, RequestFunction function,	AMFDataList params) {
+  public void onConnect(IClient client, RequestFunction function,
+      AMFDataList params) {
     m_logger.info("onConnect");
 
     String appName = app_instance.getApplication().getName();
@@ -130,34 +135,56 @@ public class Application extends ModuleBase {
    * Client Methods
    */
 
-  public void receiveClientStats(IClient client, RequestFunction function, AMFDataList params) {
+  public void receiveClientStats(IClient client, RequestFunction function,
+      AMFDataList params) {
     userManager.relayClientStats(client, params);
   }
 
-//  public void receiveClientPeerStats(IClient client, RequestFunction function, AMFDataList params) {
-//    userManager.relayClientPeerStats(client, params);
-//  }
+  // public void receiveClientPeerStats(IClient client, RequestFunction
+  // function, AMFDataList params) {
+  // userManager.relayClientPeerStats(client, params);
+  // }
 
-  public void updateUserInfo(IClient client, RequestFunction function, AMFDataList params) {
-    userManager.updateUserInfo(client, Integer.toString(client.getClientId()), params.getObject(PARAM1));
+  public void updateUserInfo(IClient client, RequestFunction function,
+      AMFDataList params) {
+    userManager.updateUserInfo(client, Integer.toString(client.getClientId()),
+        params.getObject(PARAM1));
   }
 
-  public void sendImage(IClient client, RequestFunction function,	AMFDataList params) {
+  public void sendImage(IClient client, RequestFunction function,
+      AMFDataList params) {
     whiteboardManager.sendImage(client, function, params);
   }
-  
-  public void chatToServer(IClient client, RequestFunction function, AMFDataList params) {
+
+  public void chatToServer(IClient client, RequestFunction function,
+      AMFDataList params) {
     chatManager.chatToServer(client, params);
   }
-  
-  public void returnImageURL(IClient client, AMFDataList params, String imageURL, String sdID) {
-    getLogger().info("Application.returnImageURL() sdID=" + sdID + ", imageURL="+ imageURL);
+
+  public void returnImageURL(IClient client, AMFDataList params,
+      String imageURL, String sdID) {
+    getLogger().info(
+        "Application.returnImageURL() sdID=" + sdID + ", imageURL=" + imageURL);
 
     AMFDataObj returnObj = new AMFDataObj();
     returnObj.put("imageURL", imageURL);
     returnObj.put("sdID", sdID);
 
     sendResult(client, params, returnObj);
+  }
+
+  public void logMessage(IClient client, RequestFunction function, AMFDataList params) {
+    
+    String user_name;
+      
+    try {
+      user_name = userManager.getClientInfo(Integer.toString(client.getClientId())).getString("user_name");
+    } catch (java.lang.NullPointerException e) {
+      user_name = "user_name_XXX";
+    }
+    
+    String msgIn = params.getString(3);
+    getLogger().info(user_name +" "+ msgIn);
   }
 
 }
