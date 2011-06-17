@@ -5,7 +5,7 @@ select sum(round(timestampdiff(second, connected_at, disconnected_at)/60/60,2 ))
        application_name = 'whiteboard'
 group by user_name
 order by Hours desc
-limit 30
+limit 100
 ;
 
 
