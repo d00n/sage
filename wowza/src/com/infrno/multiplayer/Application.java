@@ -173,11 +173,18 @@ public class Application extends ModuleBase {
     sendResult(client, params, returnObj);
   }
 
-  public void logMessage(IClient client, RequestFunction function,
-      AMFDataList params) {
+  public void logMessage(IClient client, RequestFunction function, AMFDataList params) {
+    
+    String user_name;
+      
+    try {
+      user_name = userManager.getClientInfo(Integer.toString(client.getClientId())).getString("user_name");
+    } catch (java.lang.NullPointerException e) {
+      user_name = "user_name_XXX";
+    }
+    
     String msgIn = params.getString(3);
-//    String user_name = userManager.getClientInfo(Integer.toString(client.getClientId())).getString("user_name");
-    getLogger().info("client log message: " + msgIn);
+    getLogger().info(user_name +" "+ msgIn);
   }
 
 }
