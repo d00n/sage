@@ -6,6 +6,7 @@ hostname
 echo
 
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_hours_played.sql 
+echo
 echo 'Total hours'
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_hours_played_total.sql 
 echo
