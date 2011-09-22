@@ -40,10 +40,9 @@ public class UserManager {
 
   public Boolean userConnect(IClient client, AMFDataList params) {
     // TODO: put in user authentication stuff here
-    main_app.log("UserManager.userConnect() clientId:" + client.getClientId() 
-        + ", client count:" + main_app.app_instance.getClientCount());
-
+    
     AMFDataObj curr_user_obj = (AMFDataObj) params.get(3);
+
     
     // TODO: How much of this data ought to live in curr_user_obj?
     String auth_key = params.getString(4);
@@ -52,6 +51,14 @@ public class UserManager {
     String application_name = params.getString(7);
     String application_version = params.getString(8);
     String capabilities = params.getString(9);
+    
+    main_app.log("UserManager.userConnect() "
+        +"room_id=" + room_id +"("+ room_name +") "        
+        +"clientId:" + client.getClientId() 
+        + "(" + curr_user_obj.getString("user_id") + ")(" +curr_user_obj.getString("user_name") + ")" 
+        + ", client count:" + main_app.app_instance.getClientCount());
+
+
 
     if (!validateKey(auth_key)) {
       main_app.log("UserManager.userConnect() user key invalid");
@@ -107,7 +114,16 @@ public class UserManager {
   }
 
   public void userDisconnect(IClient client) {
-    main_app.log("UserManager.onDisconnect() " + client.getClientId());
+//    main_app.log("UserManager.onDisconnect() " + client.getClientId());
+    
+    AMFDataObj curr_user_obj = (AMFDataObj) users_obj.get(Integer.toString(client.getClientId()));
+    
+    main_app.log("UserManager.onDisconnect() "
+        +"room_id=" + room_id +"("+ room_name +") "        
+        +"clientId:" + client.getClientId() 
+        + "(" + curr_user_obj.getString("user_id") + ")(" +curr_user_obj.getString("user_name") + ")" 
+        + ", clients:" + main_app.app_instance.getClientCount());
+    
 
     try {
       main_app.databaseManager.saveSessionMemberEnd(client.getClientId());
