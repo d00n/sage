@@ -10,7 +10,7 @@ import com.wowza.wms.module.ModuleBase;
 import com.wowza.wms.request.RequestFunction;
 
 public class Application extends ModuleBase {
-  private static String       VERSION  = "v0.8.1";
+  private static String       VERSION  = "v0.8.2";
   public IApplicationInstance app_instance;
   public ChatManager          chatManager;
   public DatabaseManager      databaseManager;
@@ -22,7 +22,7 @@ public class Application extends ModuleBase {
   private static Logger       m_logger = Logger.getLogger(Application.class);
 
   private static class ReportLoop implements Runnable {
-    private static final int SECONDS_BETWEEN_REPORTS = 3;
+    private static final int SECONDS_BETWEEN_REPORTS = 30;
     public Application       main_app;
 
     public void run() {
@@ -70,7 +70,6 @@ public class Application extends ModuleBase {
 
     try {
       databaseManager.saveSessionEndReport();
-      databaseManager.close();
     } catch (Exception e) {
       error("Application.onAppStop DatabaseManager not online" + e.getMessage());
     }
@@ -173,26 +172,31 @@ public class Application extends ModuleBase {
     sendResult(client, params, returnObj);
   }
 
-  public void logMessage(IClient client, RequestFunction function, AMFDataList params) {
-    
+  public void logMessage(IClient client, RequestFunction function,
+      AMFDataList params) {
+
     String user_name;
     String client_id;
     String room_id;
-      
-    // It is possible for clients to log before their details have been recorded by userManager
+
+    // It is possible for clients to log before their details have been recorded
+    // by userManager
     // Specifically, during the initial server connection
     try {
       client_id = Integer.toString(client.getClientId());
-      user_name = userManager.getClientInfo(Integer.toString(client.getClientId())).getString("user_name");
+      user_name = userManager.getClientInfo(
+          Integer.toString(client.getClientId())).getString("user_name");
       room_id = userManager.room_id;
     } catch (java.lang.NullPointerException e) {
       user_name = "user_name_X";
       client_id = "user_id_X";
       room_id = "room_id_X";
     }
-    
+
     String msgIn = params.getString(3);
-    getLogger().info("room_id="+ room_id +" client_id="+ client_id +"("+ user_name +") "+ msgIn);
+    getLogger().info(
+        "room_id=" + room_id + " client_id=" + client_id + "(" + user_name
+            + ") " + msgIn);
   }
 
 }

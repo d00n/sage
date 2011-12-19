@@ -22,16 +22,15 @@ import com.wowza.wms.sharedobject.ISharedObjects;
 import com.wowza.wms.sharedobject.SharedObject;
 
 public class UserManager {
-  private static String SHARED_KEY = "871a3f2c392e10ca2e04c442f1eedb65";
+  private static String SHARED_KEY         = "871a3f2c392e10ca2e04c442f1eedb65";
   private static String SHARED_OBJECT_NAME = "whiteboard_contents";
 
-  
   // TODO rename users_obj
-  public AMFDataObj users_obj;
-  public String room_id;
-  public String room_name;
+  public AMFDataObj     users_obj;
+  public String         room_id;
+  public String         room_name;
 
-  private Application main_app;
+  private Application   main_app;
 
   public UserManager(Application app) {
     main_app = app;
@@ -40,11 +39,9 @@ public class UserManager {
 
   public Boolean userConnect(IClient client, AMFDataList params) {
     // TODO: put in user authentication stuff here
-    main_app.log("UserManager.userConnect() clientId:" + client.getClientId() 
-        + ", client count:" + main_app.app_instance.getClientCount());
 
     AMFDataObj curr_user_obj = (AMFDataObj) params.get(3);
-    
+
     // TODO: How much of this data ought to live in curr_user_obj?
     String auth_key = params.getString(4);
     room_id = params.getString(5);
@@ -52,6 +49,12 @@ public class UserManager {
     String application_name = params.getString(7);
     String application_version = params.getString(8);
     String capabilities = params.getString(9);
+
+    main_app.log("UserManager.userConnect() " + "room_id=" + room_id + "("
+        + room_name + ") " + "clientId:" + client.getClientId() + "("
+        + curr_user_obj.getString("user_id") + ")("
+        + curr_user_obj.getString("user_name") + ")" + ", client count:"
+        + main_app.app_instance.getClientCount());
 
     if (!validateKey(auth_key)) {
       main_app.log("UserManager.userConnect() user key invalid");
@@ -89,30 +92,41 @@ public class UserManager {
 
     try {
       main_app.databaseManager.saveSessionStart(curr_user_obj, room_name);
-      main_app.databaseManager.saveSessionMemberStart(room_id, 
-          room_name,
+      main_app.databaseManager.saveSessionMemberStart(room_id, room_name,
           curr_user_obj.getString("user_id"), 
           curr_user_obj.getString("user_name"), 
-          application_name,
-          application_version, 
+          application_name, 
+          application_version,
           client.getClientId(), 
           client.getFlashVer(), 
-          client.getIp(), 
+          client.getIp(),
           capabilities);
     } catch (Exception e) {
-      main_app.error("UserManager.userConnect() DatabaseManager not online"+ e.getMessage());
+      main_app.error("UserManager.userConnect() DatabaseManager not online"
+          + e.getMessage());
     }
 
     return true;
   }
 
   public void userDisconnect(IClient client) {
-    main_app.log("UserManager.onDisconnect() " + client.getClientId());
+    // main_app.log("UserManager.onDisconnect() " + client.getClientId());
+
+    AMFDataObj curr_user_obj = (AMFDataObj) users_obj.get(Integer
+        .toString(client.getClientId()));
+
+    main_app.log("UserManager.onDisconnect() " + "room_id=" + room_id + "("
+        + room_name + ") " + "clientId:" + client.getClientId() 
+//        + "(" + curr_user_obj.getString("user_id") + ")("
+//        + curr_user_obj.getString("user_name") + ")" 
+        + ", clients:"
+        + main_app.app_instance.getClientCount());
 
     try {
       main_app.databaseManager.saveSessionMemberEnd(client.getClientId());
     } catch (Exception e) {
-      main_app.error("UserManager.userDisconnect() DatabaseManager not online"+ e.getMessage());
+      main_app.error("UserManager.userDisconnect() DatabaseManager not online"
+          + e.getMessage());
     }
 
     // ISharedObjects sharedObjects =
@@ -134,70 +148,66 @@ public class UserManager {
     main_app.app_instance.broadcastMsg("updateUsers", users_obj);
   }
 
-  public void relayClientStats(IClient client, AMFDataList params)
-  {
-//    main_app.log("UserManager.relayClientStats() client.getLastValidateTime="+client.getLastValidateTime());
-    AMFDataObj clientServerStatsRecord = (AMFDataObj) params.get(3);		
-    main_app.app_instance.broadcastMsg("receiveClientStats",clientServerStatsRecord);
-
+  public void relayClientStats(IClient client, AMFDataList params) {
+    // main_app.log("UserManager.relayClientStats() client.getLastValidateTime="+client.getLastValidateTime());
+    AMFDataObj clientServerStatsRecord = (AMFDataObj) params.get(3);
+    main_app.app_instance.broadcastMsg("receiveClientStats",
+        clientServerStatsRecord);
 
     try {
       main_app.databaseManager.saveSessionReport(clientServerStatsRecord,
-          client.getLastValidateTime(),
-          client.getPingRoundTripTime(),
-          (long) client.getMediaIOPerformanceCounter().getFileInBytesRate(),
-          (long) client.getMediaIOPerformanceCounter().getFileOutBytesRate(),
-          (long) client.getMediaIOPerformanceCounter().getMessagesInBytesRate(),
-          client.getMediaIOPerformanceCounter().getMessagesInCountRate(),
-          (long) client.getMediaIOPerformanceCounter().getMessagesLossBytesRate(),
-          client.getMediaIOPerformanceCounter().getMessagesLossCountRate(),
-          (long) client.getMediaIOPerformanceCounter().getMessagesOutBytesRate(),
-          client.getMediaIOPerformanceCounter().getMessagesOutCountRate());
+        client.getLastValidateTime(),
+        client.getPingRoundTripTime(),
+        (long) client.getMediaIOPerformanceCounter().getFileInBytesRate(),
+        (long) client.getMediaIOPerformanceCounter().getFileOutBytesRate(), 
+        (long) client.getMediaIOPerformanceCounter().getMessagesInBytesRate(),
+        client.getMediaIOPerformanceCounter().getMessagesInCountRate(),
+        (long) client.getMediaIOPerformanceCounter().getMessagesLossBytesRate(), 
+        client.getMediaIOPerformanceCounter().getMessagesLossCountRate(),
+        (long) client.getMediaIOPerformanceCounter().getMessagesOutBytesRate(), 
+        client.getMediaIOPerformanceCounter().getMessagesOutCountRate());
     } catch (Exception e) {
-      main_app.error("UserManager.DatabaseManager not online"+ e.getMessage());
+      main_app.error("UserManager.DatabaseManager not online" + e.getMessage());
     }
   }
-  class PingResult implements IModulePingResult
-  {
-    public void onResult(IClient client, long pingTime, int pingId, boolean result)
-    {
+
+  class PingResult implements IModulePingResult {
+    public void onResult(IClient client, long pingTime, int pingId,
+        boolean result) {
       WMSLogger log = WMSLoggerFactory.getLogger(null);
-      log.debug("onResult: result:"+result);
-      if (!result)
-      {
+      log.debug("onResult: result:" + result);
+      if (!result) {
         // client has died lets kill it
         client.getAppInstance().shutdownClient(client);
-      }
-      else
-        log.debug("lastPingTime: "+client.getPingRoundTripTime());
+      } else
+        log.debug("lastPingTime: " + client.getPingRoundTripTime());
     }
   }
 
-
-  
   public void collectServerStats() {
-    AMFDataObj serverStats = new AMFDataObj(); 
-    AMFDataObj server_serverStats = new AMFDataObj(); 
-    
-    IClient client;    
+    AMFDataObj serverStats = new AMFDataObj();
+    AMFDataObj server_serverStats = new AMFDataObj();
+
+    IClient client;
 
     Integer client_count = 0;
     AMFDataObj server_clientStats;
-    for (Iterator<IClient> clients_iterator = main_app.app_instance.getClients().iterator(); clients_iterator.hasNext(); ) {
+    for (Iterator<IClient> clients_iterator = main_app.app_instance
+        .getClients().iterator(); clients_iterator.hasNext();) {
       client = clients_iterator.next();
-      
+
       client.ping(new PingResult());
 
       client_count++;
       server_clientStats = new AMFDataObj();
       String suid = Integer.toString(client.getClientId());
       server_clientStats.put("suid", suid);
-      
+
       AMFDataObj user_obj = (AMFDataObj) users_obj.get(suid);
-      
-      if (user_obj != null){
+
+      if (user_obj != null) {
         server_clientStats.put("user_name", user_obj.getString("user_name"));
-        
+
         server_clientStats.put("PingRoundTripTime", (int) client.getPingRoundTripTime());
         server_clientStats.put("PingTimeout", (int) client.getPingTimeout());
         server_clientStats.put("FileInBytes", (int) client.getTotalIOPerformanceCounter().getFileInBytes());
@@ -213,63 +223,82 @@ public class UserManager {
         server_clientStats.put("MessagesOutBytes", (int) client.getTotalIOPerformanceCounter().getMessagesOutBytes());
         server_clientStats.put("MessagesOutBytesRate", (int) client.getTotalIOPerformanceCounter().getMessagesOutBytesRate());
         server_clientStats.put("MessagesOutCount", (int) client.getTotalIOPerformanceCounter().getMessagesOutCount());
-        server_clientStats.put("MessagesOutCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesOutCountRate());      
+        server_clientStats.put("MessagesOutCountRate", (int) client.getTotalIOPerformanceCounter().getMessagesOutCountRate());
         // "Not implemented"
-  //      server_clientStats.put("FileOutBytes", (int) client.getTotalIOPerformanceCounter().getFileOutBytes());
-  //      server_clientStats.put("FileOutBytesRate", (int) client.getTotalIOPerformanceCounter().getFileOutBytesRate());      
-        
+        // server_clientStats.put("FileOutBytes", (int)
+        // client.getTotalIOPerformanceCounter().getFileOutBytes());
+        // server_clientStats.put("FileOutBytesRate", (int)
+        // client.getTotalIOPerformanceCounter().getFileOutBytesRate());
+
         serverStats.put(suid, server_clientStats);
       }
-      
-      server_serverStats.put("client_count", client_count);  
-      
-      server_serverStats.put("FileInBytes", (int) main_app.app_instance.getIOPerformanceCounter().getFileInBytes());
-      server_serverStats.put("FileInBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getFileInBytesRate());
-//      server_serverStats.put("MessagesInBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInBytes());
-      server_serverStats.put("MessagesInBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInBytesRate());
-//      server_serverStats.put("MessagesInCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInCount());
-      server_serverStats.put("MessagesInCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesInCountRate());
-      server_serverStats.put("MessagesLossBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossBytes());
-      server_serverStats.put("MessagesLossBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossBytesRate());
-      server_serverStats.put("MessagesLossCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossCount());
-      server_serverStats.put("MessagesLossCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesLossCountRate());
-//      server_serverStats.put("MessagesOutBytes", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutBytes());
-      server_serverStats.put("MessagesOutBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutBytesRate());
-//      server_serverStats.put("MessagesOutCount", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutCount());
-      server_serverStats.put("MessagesOutCountRate", (int) main_app.app_instance.getIOPerformanceCounter().getMessagesOutCountRate());    
+
+      server_serverStats.put("client_count", client_count);
+
+      server_serverStats.put("FileInBytes", (int) main_app.app_instance
+          .getIOPerformanceCounter().getFileInBytes());
+      server_serverStats.put("FileInBytesRate", (int) main_app.app_instance
+          .getIOPerformanceCounter().getFileInBytesRate());
+      // server_serverStats.put("MessagesInBytes", (int)
+      // main_app.app_instance.getIOPerformanceCounter().getMessagesInBytes());
+      server_serverStats.put("MessagesInBytesRate", (int) main_app.app_instance
+          .getIOPerformanceCounter().getMessagesInBytesRate());
+      // server_serverStats.put("MessagesInCount", (int)
+      // main_app.app_instance.getIOPerformanceCounter().getMessagesInCount());
+      server_serverStats.put("MessagesInCountRate", (int) main_app.app_instance
+          .getIOPerformanceCounter().getMessagesInCountRate());
+      server_serverStats.put("MessagesLossBytes", (int) main_app.app_instance
+          .getIOPerformanceCounter().getMessagesLossBytes());
+      server_serverStats.put("MessagesLossBytesRate",
+          (int) main_app.app_instance.getIOPerformanceCounter()
+              .getMessagesLossBytesRate());
+      server_serverStats.put("MessagesLossCount", (int) main_app.app_instance
+          .getIOPerformanceCounter().getMessagesLossCount());
+      server_serverStats.put("MessagesLossCountRate",
+          (int) main_app.app_instance.getIOPerformanceCounter()
+              .getMessagesLossCountRate());
+      // server_serverStats.put("MessagesOutBytes", (int)
+      // main_app.app_instance.getIOPerformanceCounter().getMessagesOutBytes());
+      server_serverStats.put("MessagesOutBytesRate",
+          (int) main_app.app_instance.getIOPerformanceCounter()
+              .getMessagesOutBytesRate());
+      // server_serverStats.put("MessagesOutCount", (int)
+      // main_app.app_instance.getIOPerformanceCounter().getMessagesOutCount());
+      server_serverStats.put("MessagesOutCountRate",
+          (int) main_app.app_instance.getIOPerformanceCounter()
+              .getMessagesOutCountRate());
       // "Not implemented"
-//      server_serverStats.put("FileOutBytes", (int) main_app.app_instance.getIOPerformanceCounter().getFileOutBytes());
-//      server_serverStats.put("FileOutBytesRate", (int) main_app.app_instance.getIOPerformanceCounter().getFileOutBytesRate());   
-      
+      // server_serverStats.put("FileOutBytes", (int)
+      // main_app.app_instance.getIOPerformanceCounter().getFileOutBytes());
+      // server_serverStats.put("FileOutBytesRate", (int)
+      // main_app.app_instance.getIOPerformanceCounter().getFileOutBytesRate());
+
       serverStats.put("server_record", server_serverStats);
-    }     
-    
-    main_app.app_instance.broadcastMsg("receiveServerStats",serverStats);
+    }
+
+    main_app.app_instance.broadcastMsg("receiveServerStats", serverStats);
   }
 
-  public void updateUserInfo(IClient client, String suid, AMFDataObj user_obj)
-  {
-    main_app.log("UserManager.updateUserInfo() clientId="+client.getClientId()+", suid="+suid);
+  public void updateUserInfo(IClient client, String suid, AMFDataObj user_obj) {
+    main_app.log("UserManager.updateUserInfo() clientId="
+        + client.getClientId() + ", suid=" + suid);
 
     users_obj.put(suid, user_obj);
 
-    if(getClientInfo(suid).getBoolean("report_connection_status")){
-      //need to report flapping
+    if (getClientInfo(suid).getBoolean("report_connection_status")) {
+      // need to report flapping
 
-      String application_name 		= client.getApplication().getName();			
-      String peer_connection_status 	= user_obj.getString("peer_connection_status");
-      String user_id 					= user_obj.getString("user_id");
-      String user_name 				= user_obj.getString("user_name");
+      String application_name = client.getApplication().getName();
+      String peer_connection_status = user_obj
+          .getString("peer_connection_status");
+      String user_id = user_obj.getString("user_id");
+      String user_name = user_obj.getString("user_name");
 
-      try{
-        main_app.databaseManager.saveSessionMemberFlap(application_name, 
-            room_name, 
-            room_id, 
-            user_name, 
-            user_id, 
-            peer_connection_status);
+      try {
+        main_app.databaseManager.saveSessionMemberFlap(application_name,
+            room_name, room_id, user_name, user_id, peer_connection_status);
       } catch (Exception e) {
-        main_app.error("UserManager.updateUserInfo() e:"+ e.getMessage());
+        main_app.error("UserManager.updateUserInfo() e:" + e.getMessage());
       }
     }
 
@@ -284,7 +313,8 @@ public class UserManager {
   private Boolean validateKey(String auth_string) {
     // TODO: restrict this to trusted hosts (localhost)
     if (auth_string.equals("sample_auth_key")) {
-      main_app.log("UserManger.validateKey() using sample_auth_key, just come right in.");
+      main_app
+          .log("UserManger.validateKey() using sample_auth_key, just come right in.");
       return true;
     }
 
@@ -293,8 +323,10 @@ public class UserManager {
       String auth_hash = auth_string.split(":")[0];
       String auth_time = auth_string.split(":")[1];
 
-      main_app.log("UserManager.validateKey() curr time: "+ new Date().getTime() / 1000);
-      main_app.log("UserManager.validateKey() passed time: "+ Integer.parseInt(auth_time));
+      main_app.log("UserManager.validateKey() curr time: "
+          + new Date().getTime() / 1000);
+      main_app.log("UserManager.validateKey() passed time: "
+          + Integer.parseInt(auth_time));
 
       if (new Date().getTime() / 1000 > Integer.parseInt(auth_time)) {
         main_app.log("UserManager.Authentication time is stale");
