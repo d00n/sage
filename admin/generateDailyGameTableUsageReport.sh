@@ -13,6 +13,9 @@ echo
 echo 'Hours last 30 days'
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_hours_played_last_30_days.sql 
 echo
+echo 'Hours per day for the last 30 days'
+/usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_hours_per_day_last_30_days.sql 
+echo
 echo 'Games in progress'
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_games_in_progress.sql
 echo
