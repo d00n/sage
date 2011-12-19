@@ -10,7 +10,7 @@ import com.wowza.wms.module.ModuleBase;
 import com.wowza.wms.request.RequestFunction;
 
 public class Application extends ModuleBase {
-  private static String       VERSION  = "v0.8.1";
+  private static String       VERSION  = "v0.8.2";
   public IApplicationInstance app_instance;
   public ChatManager          chatManager;
   public DatabaseManager      databaseManager;
@@ -22,7 +22,7 @@ public class Application extends ModuleBase {
   private static Logger       m_logger = Logger.getLogger(Application.class);
 
   private static class ReportLoop implements Runnable {
-    private static final int SECONDS_BETWEEN_REPORTS = 3;
+    private static final int SECONDS_BETWEEN_REPORTS = 30;
     public Application       main_app;
 
     public void run() {
