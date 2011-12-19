@@ -2,6 +2,8 @@ package com.infrno.multiplayer;
 
 import java.sql.*;
 
+import javax.naming.InitialContext;
+
 import com.wowza.wms.amf.AMFDataObj;
 
 import com.infrno.multiplayer.Application;
@@ -13,15 +15,6 @@ public class DatabaseManager {
   private String db_username;
   private String db_password;
   private String db_instance_name;
-
-  private Connection _conn;
-  private PreparedStatement _saveImage_ps;
-  private PreparedStatement _sessionStart_ps;
-  private PreparedStatement _sessionEnd_ps;
-  private PreparedStatement _sessionFlap_ps;
-  private PreparedStatement _sessionMemberStart_ps;
-  private PreparedStatement _sessionMemberEnd_ps;
-  private PreparedStatement _sessionReport_ps;
 
   private int _session_id = 0;
 
@@ -42,18 +35,21 @@ public class DatabaseManager {
     db_password = "sk00bysnack99";
     db_instance_name = "sage";
 
-    setupDBConnection();
-    setupPreparedStatements();
+    initDBConnection();
   }
 
-  private void setupDBConnection() {
+  private void initDBConnection() {
+    
     try {
       Class.forName("com.mysql.jdbc.Driver");
     } catch (ClassNotFoundException e) {
       main_app.error("DatabaseManager.setupDBConnection() Unable to load jdbc driver. ClassNotFoundException "
           + e.getMessage());
     }
-
+  }
+  
+  private Connection getConnection() {
+    Connection _conn = null;
     try {
       _conn = DriverManager.getConnection("jdbc:mysql://" + db_server
           + "/" + db_instance_name + "?user=" + db_username
@@ -62,147 +58,44 @@ public class DatabaseManager {
       main_app.error("DatabaseManager.setupDBConnection() get DB connection "
           + e.getMessage());
     }
-  }
-
-  private void setupPreparedStatements() {
     
-    String saveImageSql = "insert into image (session_id, path) values (?,?)";
-
-    String sessionStartSql = "insert into session " 
-      + "(room_id, "
-      + "room_name, "
-      + "application_name) values (?,?,?)";
-
-    String sessionEndSql = "update session "
-      + "set session_ended_at = NOW() " + "where session_id = ? ";
-
-    String sessionMemberStartSql = "insert into session_member "
-      + "(session_id, " 
-      + "user_name, " 
-      + "room_id, " 
-      + "room_name, "
-      + "application_name, " 
-      + "application_version, "
-      + "avHardwareDisable, "				
-      + "localFileReadDisable, "
-      + "windowless, "
-      + "hasTLS, "
-      + "hasAudio, "
-      + "hasStreamingAudio, "
-      + "hasStreamingVideo, "
-      + "hasEmbeddedVideo, "
-      + "hasMP3, "
-      + "hasAudioEncoder, "
-      + "hasVideoEncoder, "
-      + "hasAccessibility, "
-      + "hasPrinting, "
-      + "hasScreenPlayback, "
-      + "isDebugger, "
-      + "hasIME, "
-      + "p32bit_support, "
-      + "p64bit_support, "				
-      + "version, "
-      + "manufacturer, "
-      + "screenResolution, "
-      + "screenDPI, "
-      + "screenColor, "
-      + "os, "
-      + "arch, "
-      + "language, "
-      + "playerType, "
-      + "maxLevelIDC, "				
-      + "hasScreenBroadcast, "
-      + "pixelAspectRatio, "
-      + "wowza_client_id, "
-      + "user_id "
-      + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-    String sessionMemberEndSql = "update session_member "
-      + "set disconnected_at = NOW() " 
-      + "where session_id = ? "
-      + "and wowza_client_id = ? ";
-
-    String sessionReportSql = "insert into session_report "
-      + "(session_id, "
-      + "room_id, "
-      + "room_name, "
-      + "user_name, "
-      + "c_audioBytesPerSecond, "
-      + "c_videoBytesPerSecond, "
-      + "c_dataBytesPerSecond, "
-      + "c_currentBytesPerSecond, "
-      + "c_maxBytesPerSecond, "
-      + "c_byteCount, "
-      + "c_dataByteCount, "
-      + "c_videoByteCount, "
-      + "c_audioLossRate, "
-      + "c_srtt, "
-      + "c_wowzaProtocol, "
-      + "c_droppedFrames, "
-
-      + "application_name, "
-
-      + "s_lastValidatedTime, "
-      + "s_pingRtt, "
-      + "s_fileInBytesRate, "
-      + "s_fileOutBytesRate, "
-      + "s_messagesInBytesRate, "
-      + "s_messagesInCountRate, "
-      + "s_messagesLossBytesRate, "
-      + "s_messagesLossCountRate, "
-      + "s_messagesOutBytesRate, "
-      + "s_messagesOutCountRate, "
-
-      + "user_id "
-      + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-    String sessionFlapSql = "insert into session_flap"
-      + "(session_id, " 
-      + "application_name, " 
-      + "room_name, "
-      + "room_id, " 
-      + "user_name, " 
-      + "user_id, "
-      + "peer_connection_status "
-      + ") values (?,?,?,?,?,?,?)";
-
-    try {
-      _saveImage_ps = _conn.prepareStatement(saveImageSql);
-      _sessionMemberStart_ps = _conn.prepareStatement(sessionMemberStartSql);
-      _sessionMemberEnd_ps = _conn.prepareStatement(sessionMemberEndSql);
-      _sessionReport_ps = _conn.prepareStatement(sessionReportSql);
-      _sessionFlap_ps = _conn.prepareStatement(sessionFlapSql);
-      _sessionEnd_ps = _conn.prepareStatement(sessionEndSql);
-      _sessionStart_ps = _conn.prepareStatement(sessionStartSql, PreparedStatement.RETURN_GENERATED_KEYS);
-    } catch (SQLException e) {
-      main_app.error("DatabaseManager.setupPreparedStatements() "
-          + e.getMessage());
-    }
-  }
-
-  public void close() {
-    try {
-      _conn.close();
-    } catch (SQLException e) {
-      main_app.error("DatabaseManager.close() " + e.getMessage());
-    }
+    return _conn;
   }
   
+  private void closeConnection(Connection conn, PreparedStatement stmt, String caller){
+    if (stmt != null) {
+      try {stmt.close();} catch (SQLException e) {}
+      stmt = null;
+    }
+    
+    if (conn != null) {
+      try { conn.close();} catch (SQLException e) {}
+      conn = null; 
+    }
+  }
   
   
   public void saveImage(String path) {
     main_app.log("DatabaseManager.saveImage() session_id="+ _session_id);
+    
+    String saveImageSql = "insert into image (session_id, path) values (?,?)";
+    
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
 
     try {
-      _saveImage_ps.clearParameters();
+      conn = getConnection();
+      preparedStatement = conn.prepareStatement(saveImageSql);
+      preparedStatement.clearParameters();
 
-      _saveImage_ps.setInt(1, _session_id);
-      _saveImage_ps.setString(2, path);
+      preparedStatement.setInt(1, _session_id);
+      preparedStatement.setString(2, path);
 
-      _saveImage_ps.execute();
+      preparedStatement.execute();
     } catch (SQLException e) {
-      main_app.error("saveSessionStartReport(): execute(): "
-          + e.toString());
+      main_app.error("saveSessionStartReport(): execute(): "+ e.toString());
+    } finally {
+      closeConnection(conn, preparedStatement, "saveImage");
     }
 
   }
@@ -219,28 +112,40 @@ public class DatabaseManager {
       return true;
     }
     
+    String sessionStartSql = "insert into session " 
+      + "(room_id, "
+      + "room_name, "
+      + "application_name) values (?,?,?)";
+       
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
+    ResultSet rs = null;
+    
     try {
-      _sessionStart_ps.clearParameters();
-
-      _sessionStart_ps.setString(1, main_app.app_instance.getName());
-      _sessionStart_ps.setString(2, room_name);
-      _sessionStart_ps.setString(3, main_app.app_instance.getApplication().getName());
-
-      _sessionStart_ps.execute();
-    } catch (SQLException e) {
-      main_app.error("saveSessionStartReport(): execute(): "
-          + e.toString());
-    }
-
-    ResultSet rs;
-    try {
-      rs = _sessionStart_ps.getGeneratedKeys();
+      conn = getConnection();
+      
+      preparedStatement = conn.prepareStatement(sessionStartSql, PreparedStatement.RETURN_GENERATED_KEYS);
+      preparedStatement.clearParameters();
+      preparedStatement.setString(1, main_app.app_instance.getName());
+      preparedStatement.setString(2, room_name);
+      preparedStatement.setString(3, main_app.app_instance.getApplication().getName());      
+      preparedStatement.execute();
+      
+      rs = preparedStatement.getGeneratedKeys();
       if (rs.next()) {
         _session_id = rs.getInt(1);
       }
+      
+      preparedStatement.close();
+      preparedStatement = null;
+
+      conn.close();
+      conn = null;
+      
     } catch (SQLException e) {
-      main_app
-      .error("saveSessionStartReport(): getGeneratedKeys() or next() failed: "+ e.toString());
+      main_app.error("saveSessionStartReport(): execute(): " + e.toString());
+    } finally {
+      closeConnection(conn, preparedStatement, "saveSessionStart");
     }
 
     return true;
@@ -285,44 +190,85 @@ public class DatabaseManager {
     String user_id = amfDataObj.getString("user_id");
     
     String application_name = main_app.app_instance.getApplication().getName();
+    
+    String sessionReportSql = "insert into session_report "
+      + "(session_id, "
+      + "room_id, "
+      + "room_name, "
+      + "user_name, "
+      + "c_audioBytesPerSecond, "
+      + "c_videoBytesPerSecond, "
+      + "c_dataBytesPerSecond, "
+      + "c_currentBytesPerSecond, "
+      + "c_maxBytesPerSecond, "
+      + "c_byteCount, "
+      + "c_dataByteCount, "
+      + "c_videoByteCount, "
+      + "c_audioLossRate, "
+      + "c_srtt, "
+      + "c_wowzaProtocol, "
+      + "c_droppedFrames, "
+
+      + "application_name, "
+
+      + "s_lastValidatedTime, "
+      + "s_pingRtt, "
+      + "s_fileInBytesRate, "
+      + "s_fileOutBytesRate, "
+      + "s_messagesInBytesRate, "
+      + "s_messagesInCountRate, "
+      + "s_messagesLossBytesRate, "
+      + "s_messagesLossCountRate, "
+      + "s_messagesOutBytesRate, "
+      + "s_messagesOutCountRate, "
+
+      + "user_id "
+      + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
 
     try {
-      _sessionReport_ps.clearParameters();
+      conn = getConnection();
+      preparedStatement = conn.prepareStatement(sessionReportSql);
+      preparedStatement.clearParameters();
 
-      _sessionReport_ps.setInt(1, _session_id);
-      _sessionReport_ps.setString(2, room_id);
-      _sessionReport_ps.setString(3, room_name);
-      _sessionReport_ps.setString(4, user_name);
-      _sessionReport_ps.setInt(5, audioBytesPerSecond);
-      _sessionReport_ps.setInt(6, videoBytesPerSecond);
-      _sessionReport_ps.setInt(7, dataBytesPerSecond);
-      _sessionReport_ps.setInt(8, currentBytesPerSecond);
-      _sessionReport_ps.setInt(9, maxBytesPerSecond);
-      _sessionReport_ps.setInt(10, byteCount);
-      _sessionReport_ps.setInt(11, dataByteCount);
-      _sessionReport_ps.setInt(12, videoByteCount);
-      _sessionReport_ps.setInt(13, audioLossRate);
-      _sessionReport_ps.setInt(14, srtt);
-      _sessionReport_ps.setString(15, wowza_protocol);
-      _sessionReport_ps.setInt(16, droppedFrames);
-      _sessionReport_ps.setString(17, application_name);
-
-      _sessionReport_ps.setTimestamp(18, new Timestamp(lastValidateTime));
-      _sessionReport_ps.setLong(19, pingRoundTripTime);
-      _sessionReport_ps.setLong(20, fileInBytesRate);
-      _sessionReport_ps.setLong(21, fileOutBytesRate);
-      _sessionReport_ps.setLong(22, messagesInBytesRate);
-      _sessionReport_ps.setLong(23, messagesInCountRate);
-      _sessionReport_ps.setLong(24, messagesLossBytesRate);
-      _sessionReport_ps.setLong(25, messagesLossCountRate);
-      _sessionReport_ps.setLong(26, messagesOutBytesRate);
-      _sessionReport_ps.setLong(27, messagesOutCountRate);
-
-      _sessionReport_ps.setString(28, user_id);
-
-      _sessionReport_ps.execute();
+      preparedStatement.setInt(1, _session_id);
+      preparedStatement.setString(2, room_id);
+      preparedStatement.setString(3, room_name);
+      preparedStatement.setString(4, user_name);
+      preparedStatement.setInt(5, audioBytesPerSecond);
+      preparedStatement.setInt(6, videoBytesPerSecond);
+      preparedStatement.setInt(7, dataBytesPerSecond);
+      preparedStatement.setInt(8, currentBytesPerSecond);
+      preparedStatement.setInt(9, maxBytesPerSecond);
+      preparedStatement.setInt(10, byteCount);
+      preparedStatement.setInt(11, dataByteCount);
+      preparedStatement.setInt(12, videoByteCount);
+      preparedStatement.setInt(13, audioLossRate);
+      preparedStatement.setInt(14, srtt);
+      preparedStatement.setString(15, wowza_protocol);
+      preparedStatement.setInt(16, droppedFrames);
+      preparedStatement.setString(17, application_name);
+      
+      preparedStatement.setTimestamp(18, new Timestamp(lastValidateTime));
+      preparedStatement.setLong(19, pingRoundTripTime);
+      preparedStatement.setLong(20, fileInBytesRate);
+      preparedStatement.setLong(21, fileOutBytesRate);
+      preparedStatement.setLong(22, messagesInBytesRate);
+      preparedStatement.setLong(23, messagesInCountRate);
+      preparedStatement.setLong(24, messagesLossBytesRate);
+      preparedStatement.setLong(25, messagesLossCountRate);
+      preparedStatement.setLong(26, messagesOutBytesRate);
+      preparedStatement.setLong(27, messagesOutCountRate);
+      
+      preparedStatement.setString(28, user_id);
+      
+      preparedStatement.execute();
     } catch (SQLException e) {
       main_app.error("saveSessionReport() sqlexecuteException: "+ e.toString());
+    } finally {
+      closeConnection(conn, preparedStatement, "saveSessionReport");
     }
 
     return true;
@@ -467,52 +413,100 @@ public class DatabaseManager {
           pixelAspectRatio = token[1];
       }
     }
+    
 
+    String sessionMemberStartSql = "insert into session_member "
+      + "(session_id, " 
+      + "user_name, " 
+      + "room_id, " 
+      + "room_name, "
+      + "application_name, " 
+      + "application_version, "
+      + "avHardwareDisable, "       
+      + "localFileReadDisable, "
+      + "windowless, "
+      + "hasTLS, "
+      + "hasAudio, "
+      + "hasStreamingAudio, "
+      + "hasStreamingVideo, "
+      + "hasEmbeddedVideo, "
+      + "hasMP3, "
+      + "hasAudioEncoder, "
+      + "hasVideoEncoder, "
+      + "hasAccessibility, "
+      + "hasPrinting, "
+      + "hasScreenPlayback, "
+      + "isDebugger, "
+      + "hasIME, "
+      + "p32bit_support, "
+      + "p64bit_support, "        
+      + "version, "
+      + "manufacturer, "
+      + "screenResolution, "
+      + "screenDPI, "
+      + "screenColor, "
+      + "os, "
+      + "arch, "
+      + "language, "
+      + "playerType, "
+      + "maxLevelIDC, "       
+      + "hasScreenBroadcast, "
+      + "pixelAspectRatio, "
+      + "wowza_client_id, "
+      + "user_id "
+      + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
+    
     try {
-      _sessionMemberStart_ps.clearParameters();
-      _sessionMemberStart_ps.setInt(1, _session_id);
-      _sessionMemberStart_ps.setString(2, user_name);
-      _sessionMemberStart_ps.setString(3, room_id);
-      _sessionMemberStart_ps.setString(4, room_name);
-      _sessionMemberStart_ps.setString(5, application_name);
-      _sessionMemberStart_ps.setString(6, application_version);
-      _sessionMemberStart_ps.setString(7, av_hardware_disable);
-      _sessionMemberStart_ps.setString(8, localFileReadDisable);
-      _sessionMemberStart_ps.setString(9, windowless);
-      _sessionMemberStart_ps.setString(10, hasTLS);
-      _sessionMemberStart_ps.setString(11, hasAudio);
-      _sessionMemberStart_ps.setString(12, hasStreamingAudio);
-      _sessionMemberStart_ps.setString(13, hasStreamingVideo);
-      _sessionMemberStart_ps.setString(14, hasEmbeddedVideo);
-      _sessionMemberStart_ps.setString(15, hasMP3);
-      _sessionMemberStart_ps.setString(16, hasAudioEncoder);
-      _sessionMemberStart_ps.setString(17, hasVideoEncoder);
-      _sessionMemberStart_ps.setString(18, hasAccessibility);
-      _sessionMemberStart_ps.setString(19, hasPrinting);
-      _sessionMemberStart_ps.setString(20, hasScreenPlayback);
-      _sessionMemberStart_ps.setString(21, isDebugger);
-      _sessionMemberStart_ps.setString(22, hasIME);
-      _sessionMemberStart_ps.setString(23, p32bit_support);
-      _sessionMemberStart_ps.setString(24, p64bit_support);
-      _sessionMemberStart_ps.setString(25, version);
-      _sessionMemberStart_ps.setString(26, manufacturer);
-      _sessionMemberStart_ps.setString(27, screenResolution);
-      _sessionMemberStart_ps.setString(28, screenDPI);
-      _sessionMemberStart_ps.setString(29, screenColor);
-      _sessionMemberStart_ps.setString(30, os);
-      _sessionMemberStart_ps.setString(31, arch);
-      _sessionMemberStart_ps.setString(32, language);
-      _sessionMemberStart_ps.setString(33, playerType);
-      _sessionMemberStart_ps.setString(34, maxLevelIDC);
-      _sessionMemberStart_ps.setString(35, hasScreenBroadcast);
-      _sessionMemberStart_ps.setString(36, pixelAspectRatio);
-      _sessionMemberStart_ps.setInt(37, client_id);
-      _sessionMemberStart_ps.setString(38, user_id);
-      _sessionMemberStart_ps.execute();
+      conn = getConnection();
+      preparedStatement = conn.prepareStatement(sessionMemberStartSql);
+      preparedStatement.clearParameters();
+      preparedStatement.setInt(1, _session_id);
+      preparedStatement.setString(2, user_name);
+      preparedStatement.setString(3, room_id);
+      preparedStatement.setString(4, room_name);
+      preparedStatement.setString(5, application_name);
+      preparedStatement.setString(6, application_version);
+      preparedStatement.setString(7, av_hardware_disable);
+      preparedStatement.setString(8, localFileReadDisable);
+      preparedStatement.setString(9, windowless);
+      preparedStatement.setString(10, hasTLS);
+      preparedStatement.setString(11, hasAudio);
+      preparedStatement.setString(12, hasStreamingAudio);
+      preparedStatement.setString(13, hasStreamingVideo);
+      preparedStatement.setString(14, hasEmbeddedVideo);
+      preparedStatement.setString(15, hasMP3);
+      preparedStatement.setString(16, hasAudioEncoder);
+      preparedStatement.setString(17, hasVideoEncoder);
+      preparedStatement.setString(18, hasAccessibility);
+      preparedStatement.setString(19, hasPrinting);
+      preparedStatement.setString(20, hasScreenPlayback);
+      preparedStatement.setString(21, isDebugger);
+      preparedStatement.setString(22, hasIME);
+      preparedStatement.setString(23, p32bit_support);
+      preparedStatement.setString(24, p64bit_support);
+      preparedStatement.setString(25, version);
+      preparedStatement.setString(26, manufacturer);
+      preparedStatement.setString(27, screenResolution);
+      preparedStatement.setString(28, screenDPI);
+      preparedStatement.setString(29, screenColor);
+      preparedStatement.setString(30, os);
+      preparedStatement.setString(31, arch);
+      preparedStatement.setString(32, language);
+      preparedStatement.setString(33, playerType);
+      preparedStatement.setString(34, maxLevelIDC);
+      preparedStatement.setString(35, hasScreenBroadcast);
+      preparedStatement.setString(36, pixelAspectRatio);
+      preparedStatement.setInt(37, client_id);
+      preparedStatement.setString(38, user_id);
+      preparedStatement.execute();
 
     } catch (SQLException e) {
-      main_app.error("saveSessionMemberStart() sqlexecuteException: "
-          + e.toString());
+      main_app.error("saveSessionMemberStart() sqlexecuteException: "+ e.toString());
+    } finally {
+      closeConnection(conn, preparedStatement, "saveSessionMemberStart");
     }
   }
 
@@ -529,21 +523,37 @@ public class DatabaseManager {
         + " room_name=" + room_name
         + " user_name=" + user_name
         + " peer_connection_status=" +peer_connection_status);
+    
+    String sessionFlapSql = "insert into session_flap"
+      + "(session_id, " 
+      + "application_name, " 
+      + "room_name, "
+      + "room_id, " 
+      + "user_name, " 
+      + "user_id, "
+      + "peer_connection_status "
+      + ") values (?,?,?,?,?,?,?)";
+
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
 
     try {
-      _sessionFlap_ps.clearParameters();
+      conn = getConnection();
+      preparedStatement = conn.prepareStatement(sessionFlapSql);
+      preparedStatement.clearParameters();
 
-      _sessionFlap_ps.setInt(1, _session_id);
-      _sessionFlap_ps.setString(2, application_name);
-      _sessionFlap_ps.setString(3, room_name);
-      _sessionFlap_ps.setString(4, room_id);
-      _sessionFlap_ps.setString(5, user_name);
-      _sessionFlap_ps.setString(6, user_id);
-      _sessionFlap_ps.setString(7, peer_connection_status);
-      _sessionFlap_ps.execute();
+      preparedStatement.setInt(1, _session_id);
+      preparedStatement.setString(2, application_name);
+      preparedStatement.setString(3, room_name);
+      preparedStatement.setString(4, room_id);
+      preparedStatement.setString(5, user_name);
+      preparedStatement.setString(6, user_id);
+      preparedStatement.setString(7, peer_connection_status);
+      preparedStatement.execute();
     } catch(SQLException e){
-      main_app.error("DatabaseManager.saveSessionMemberFlap() sqlexecuteException: "
-          + e.toString());
+      main_app.error("DatabaseManager.saveSessionMemberFlap() sqlexecuteException: "+ e.toString());
+    } finally {
+      closeConnection(conn, preparedStatement, "saveSessionMemberFlap");
     }
 
   }
@@ -554,17 +564,29 @@ public class DatabaseManager {
         + " session_id=" + _session_id   
         + " wowza_client_id=" + wowza_client_id );    
     
+    String sessionMemberEndSql = "update session_member "
+      + "set disconnected_at = NOW() " 
+      + "where session_id = ? "
+      + "and wowza_client_id = ? ";
+
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
+   
     // TODO: add up key totals from session_report rows, and save to session_member    
 
     try {
-      _sessionMemberEnd_ps.clearParameters();
+      conn = getConnection();
+      preparedStatement = conn.prepareStatement(sessionMemberEndSql);
+      preparedStatement.clearParameters();
 
-      _sessionMemberEnd_ps.setInt(1, _session_id);
-      _sessionMemberEnd_ps.setInt(2, wowza_client_id);
+      preparedStatement.setInt(1, _session_id);
+      preparedStatement.setInt(2, wowza_client_id);
 
-      _sessionMemberEnd_ps.execute();
+      preparedStatement.execute();
     } catch (SQLException e) {
       main_app.error("saveSessionMemberEnd(): execute(): " + e.toString());
+    } finally {
+      closeConnection(conn, preparedStatement, "saveSessionMemberEnd");
     }
   }
 
@@ -573,17 +595,25 @@ public class DatabaseManager {
         + main_app.app_instance.getApplication().getName()
         + " session_id=" + _session_id );    
     
+    String sessionEndSql = "update session "
+      + "set session_ended_at = NOW() " + "where session_id = ? ";
+
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;    
 
     // TODO: add up key totals from session_report rows, and save to session
 
     try {
-      _sessionEnd_ps.clearParameters();
+      conn = getConnection();
+      preparedStatement = conn.prepareStatement(sessionEndSql);
+      preparedStatement.clearParameters();
+      preparedStatement.setInt(1, _session_id);
 
-      _sessionEnd_ps.setInt(1, _session_id);
-
-      _sessionEnd_ps.execute();
+      preparedStatement.execute();
     } catch (SQLException e) {
       main_app.error("DatabaseManager.saveSessionEndReport(): execute(): " + e.toString());
+    } finally {
+      closeConnection(conn, preparedStatement, "saveSessionEndReport");
     }
   }
 }
