@@ -10,6 +10,9 @@ echo
 echo 'Total hours'
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_hours_played_total.sql 
 echo
+echo 'Hours last 30 days'
+/usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_hours_played_last_30_days.sql 
+echo
 echo 'Games in progress'
 /usr/bin/mysql sage -u sage_rw -psk00bysnack99 < $ADMIN_DIR/gameTableStats_games_in_progress.sql
 echo
