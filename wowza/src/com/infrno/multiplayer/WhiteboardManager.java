@@ -44,7 +44,7 @@ public class WhiteboardManager
 
     AMFDataByteArray image_amfba 	  = (AMFDataByteArray) params.get(3);
     String imageName 				        = params.getString(4);
-    String sdID		 			           	= params.getString(5);
+    String id		 			           	= params.getString(5);
     String imageServer			       	= params.getString(6);
 
     String hash = new String();
@@ -72,7 +72,7 @@ public class WhiteboardManager
 
     String path = IMAGE_CACHE_DIR + hashPath + imageName;
     String imageURL = imageServer + path;
-    main_app.returnImageURL(client, params, imageURL, sdID);
+    main_app.returnImageURL(client, params, imageURL, id);
     
     main_app.databaseManager.saveImage(path);
   }

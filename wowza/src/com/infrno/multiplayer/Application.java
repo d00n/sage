@@ -161,13 +161,13 @@ public class Application extends ModuleBase {
   }
 
   public void returnImageURL(IClient client, AMFDataList params,
-      String imageURL, String sdID) {
+      String imageURL, String id) {
     getLogger().info(
-        "Application.returnImageURL() sdID=" + sdID + ", imageURL=" + imageURL);
+        "Application.returnImageURL() id=" + id + ", imageURL=" + imageURL);
 
     AMFDataObj returnObj = new AMFDataObj();
     returnObj.put("imageURL", imageURL);
-    returnObj.put("sdID", sdID);
+    returnObj.put("id", id);
 
     sendResult(client, params, returnObj);
   }
