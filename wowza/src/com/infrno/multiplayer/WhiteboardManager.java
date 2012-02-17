@@ -70,11 +70,11 @@ public class WhiteboardManager
       main_app.error("sendImage() IOException:"+ioe); 
     }
 
-    String path = IMAGE_CACHE_DIR + hashPath + imageName;
-    String imageURL = imageServer + path;
-    main_app.returnImageURL(client, params, imageURL, id);
+    String imagePath = IMAGE_CACHE_DIR + hashPath + imageName;
+    String imageURL = imageServer + imagePath;
+    main_app.returnImagePath(client, params, imagePath, id);
     
-    main_app.databaseManager.saveImage(path);
+    main_app.databaseManager.saveImage(imagePath);
   }
 
   private static final String convertHashToPath(String hash) {

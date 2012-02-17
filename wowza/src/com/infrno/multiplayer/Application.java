@@ -171,6 +171,18 @@ public class Application extends ModuleBase {
 
     sendResult(client, params, returnObj);
   }
+  
+  public void returnImagePath(IClient client, AMFDataList params,
+      String imagePath, String id) {
+    getLogger().info(
+        "returnImagePath() id=" + id + ", imagePath=" + imagePath);
+
+    AMFDataObj returnObj = new AMFDataObj();
+    returnObj.put("imagePath", imagePath);
+    returnObj.put("id", id);
+
+    sendResult(client, params, returnObj);
+  }
 
   public void logMessage(IClient client, RequestFunction function,
       AMFDataList params) {
