@@ -15,80 +15,83 @@ import com.wowza.wms.module.IModuleCallResult;
 import com.wowza.wms.module.ModuleBase;
 import com.wowza.wms.request.RequestFunction;
 
-
 class CallResult extends ModuleBase implements IModuleCallResult {
-  public void onResult(IClient client, RequestFunction function, AMFDataList params) {
+  public void onResult(IClient client, RequestFunction function,
+      AMFDataList params) {
 
     // String returnValue = getParamString(params, PARAM1);
     // getLogger().info("onResult: "+ returnValue);
   }
 }
-public class WhiteboardManager 
-{
-  private Application main_app;
+
+public class WhiteboardManager {
+  private Application   main_app;
 
   private static String IMAGE_CACHE_DIR = "/images/";
-  private static String DOC_ROOT = "/var/www/html/";
+  private static String DOC_ROOT        = "/var/www/html/";
 
-  public WhiteboardManager(Application app) 
-  {
+  public WhiteboardManager(Application app) {
     main_app = app;
   }
 
-  public void myFunction(IClient client, RequestFunction function, AMFDataObj params) {
+  public void myFunction(IClient client, RequestFunction function,
+      AMFDataObj params) {
     client.call("receiveJPG", new CallResult(), params);
   }
 
-  public void sendImage(IClient client, RequestFunction function,	AMFDataList params) {
+  public void sendImage(IClient client, RequestFunction function,
+      AMFDataList params) {
     main_app.log("WhiteboardManager.sendImage()");
 
-    AMFDataByteArray image_amfba 	  = (AMFDataByteArray) params.get(3);
-    String imageName 				        = params.getString(4);
-    String id		 			           	= params.getString(5);
-    String imageServer			       	= params.getString(6);
+    AMFDataByteArray image_amfba = (AMFDataByteArray) params.get(3);
+    String imageName = params.getString(4);
+    String id = params.getString(5);
+    String imageServer = params.getString(6);
 
     String hash = new String();
     try {
-      hash = computeSum(imageName + Math.random() );
+      hash = computeSum(imageName + Math.random());
     } catch (NoSuchAlgorithmException e) {
-      main_app.error("sendImage() NoSuchAlgorithmException:"+e); 
+      main_app.error("sendImage() NoSuchAlgorithmException:" + e);
     }
 
-    String hashPath = convertHashToPath(hash);		
-    String fullPath = DOC_ROOT + IMAGE_CACHE_DIR + hashPath;		
+    String hashPath = convertHashToPath(hash);
+    String fullPath = DOC_ROOT + IMAGE_CACHE_DIR + hashPath;
     File fullPathDirs = new File(fullPath);
     fullPathDirs.mkdirs();
 
-    main_app.log("WhiteboardManager.sendImage() about to save: " + fullPathDirs +"/"+ imageName);		
+    main_app.log("WhiteboardManager.sendImage() about to save: " + fullPathDirs
+        + "/" + imageName);
     try {
       FileOutputStream fos = new FileOutputStream(fullPath + imageName);
       fos.write(image_amfba.toArray());
       fos.close();
     } catch (FileNotFoundException ex) {
-      main_app.error("sendImage() FileNotFoundException:"+ex); 
+      main_app.error("sendImage() FileNotFoundException:" + ex);
     } catch (IOException ioe) {
-      main_app.error("sendImage() IOException:"+ioe); 
+      main_app.error("sendImage() IOException:" + ioe);
     }
 
     String imagePath = IMAGE_CACHE_DIR + hashPath + imageName;
     String imageURL = imageServer + imagePath;
     main_app.returnImagePath(client, params, imagePath, id);
-    
+
     main_app.databaseManager.saveImage(imagePath);
   }
 
   private static final String convertHashToPath(String hash) {
-    StringBuffer sbuf = new StringBuffer();		
+    StringBuffer sbuf = new StringBuffer();
 
-    for (int i=0; i<32; i=i+4){
-      sbuf.append( hash.substring(i, i+4) );
+    for (int i = 0; i < 32; i = i + 4) {
+      sbuf.append(hash.substring(i, i + 4));
       sbuf.append("/");
     }
 
     return sbuf.toString();
   }
 
-  private static final String computeSum(String input) throws NoSuchAlgorithmException {
+  private static final String computeSum(String input)
+      throws NoSuchAlgorithmException {
 
     if (input == null) {
       throw new IllegalArgumentException("Input cannot be null!");
@@ -96,7 +99,7 @@ public class WhiteboardManager
 
     StringBuffer sbuf = new StringBuffer();
     MessageDigest md = MessageDigest.getInstance("MD5");
-    byte [] raw = md.digest(input.getBytes());
+    byte[] raw = md.digest(input.getBytes());
 
     for (int i = 0; i < raw.length; i++) {
       int c = (int) raw[i];
@@ -107,18 +110,14 @@ public class WhiteboardManager
       sbuf.append(block);
     }
 
-    return sbuf.toString();	
+    return sbuf.toString();
   }
 
   private static final String toHex(int s) {
     if (s < 10) {
-      return new StringBuffer().
-      append((char)('0' + s)).
-      toString();
+      return new StringBuffer().append((char) ('0' + s)).toString();
     } else {
-      return new StringBuffer().
-      append((char)('A' + (s - 10))).
-      toString();
+      return new StringBuffer().append((char) ('A' + (s - 10))).toString();
     }
   }
 

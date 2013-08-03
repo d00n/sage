@@ -348,8 +348,8 @@ public class DatabaseManager {
         if (token[0].toUpperCase().equals("DEB"))
           isDebugger = token[1];
 
-        if (token[0].toUpperCase().equals("IME"))
-          hasIME = token[1];
+//        if (token[0].toUpperCase().equals("IME"))
+//          hasIME = token[1];
 
         if (token[0].toUpperCase().equals("PR32"))
           p32bit_support = token[1];
