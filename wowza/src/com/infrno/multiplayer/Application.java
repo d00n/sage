@@ -22,7 +22,7 @@ public class Application extends ModuleBase {
   private static Logger       m_logger = Logger.getLogger(Application.class);
 
   private static class ReportLoop implements Runnable {
-    private static final int SECONDS_BETWEEN_REPORTS = 30;
+    private static final int SECONDS_BETWEEN_REPORTS = 3600;
     public Application       main_app;
 
     public void run() {
