@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ADMIN_DIR=/home/muldoon/repos/sage/admin
+ADMIN_DIR=/home/ec2-user/sage/admin
 
 hostname
 echo
