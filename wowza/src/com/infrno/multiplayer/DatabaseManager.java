@@ -30,7 +30,7 @@ public class DatabaseManager {
     // db_instance_name =
     // main_class.app_instance.getProperties().getPropertyStr("db_instance_name");
 
-    db_server = "localhost";
+    db_server = "sage.c5p5kzhtwqwh.us-west-2.rds.amazonaws.com";
     db_username = "sage_rw";
     db_password = "sk00bysnack99";
     db_instance_name = "sage";
@@ -57,7 +57,9 @@ public class DatabaseManager {
           + db_password + "");
     } catch (SQLException e) {
       main_app.error("DatabaseManager.setupDBConnection() get DB connection "
-          + e.getMessage());
+          + e.getMessage() + "jdbc:mysql://" + db_server + "/"
+          + db_instance_name + "?user=" + db_username + "&password="
+          + db_password + "");
     }
 
     return _conn;
